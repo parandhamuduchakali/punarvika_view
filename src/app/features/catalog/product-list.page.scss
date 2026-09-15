@@ -1,0 +1,140 @@
+.pf-shop {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ---------------------------------------------------------------- filters */
+.pf-filters {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.15rem;
+  position: sticky;
+  top: 88px;
+}
+.pf-filters__title {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pf-price-range {
+  border: none;
+  padding: 0;
+  margin-inline: 0;
+}
+.pf-price-range__inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pf-price-range__inputs .pf-input {
+  min-width: 0;
+}
+
+.pf-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pf-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pf-green);
+}
+.pf-check label {
+  font-size: 0.925rem;
+}
+
+/* ---------------------------------------------------------------- results */
+.pf-results__count {
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.pf-product {
+  display: flex;
+  flex-direction: column;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  overflow: hidden;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.pf-product:hover {
+  text-decoration: none;
+  border-color: var(--pf-green);
+  transform: translateY(-2px);
+}
+.pf-product__image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--pf-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pf-product__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pf-product__placeholder {
+  font-size: 2.5rem;
+  opacity: 0.35;
+}
+.pf-product__flag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: var(--pf-danger);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+.pf-product__flag--low {
+  background: #96590a;
+}
+.pf-product__body {
+  padding: 0.85rem 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+}
+.pf-product__name {
+  margin: 0;
+  font-size: 1rem;
+}
+.pf-product__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--pf-muted);
+  flex: 1 1 auto;
+}
+.pf-product__unit {
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.pf-pager {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 900px) {
+  .pf-shop {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .pf-filters {
+    position: static;
+  }
+}

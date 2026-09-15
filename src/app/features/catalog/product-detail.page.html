@@ -1,0 +1,138 @@
+<div class="pf-container pf-page">
+  @if (loading()) {
+    <pf-loading label="Loading product" />
+  } @else if (failed()) {
+    <pf-error message="We could not find that product." [retryable]="false" />
+    <p style="text-align: center">
+      <a routerLink="/products" class="pf-button pf-button--ghost">Back to the shop</a>
+    </p>
+  } @else if (product(); as item) {
+    <nav class="pf-breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/products">Shop</a>
+      @if (item.category) {
+        <span aria-hidden="true">/</span>
+        <a [routerLink]="['/categories', item.category.slug]">{{ item.category.name }}</a>
+      }
+    </nav>
+
+    <div class="pf-detail">
+      <!-- --------------------------------------------------------- media -->
+      <div class="pf-detail__media">
+        <div class="pf-detail__image">
+          @if (selectedImage()) {
+            <img [src]="selectedImage()" [alt]="item.name" />
+          } @else {
+            <span class="pf-detail__placeholder" aria-hidden="true">🌾</span>
+          }
+        </div>
+
+        @if (item.images.length > 1) {
+          <div class="pf-thumbs">
+            @for (image of item.images; track image.id) {
+              <button
+                type="button"
+                class="pf-thumb"
+                [class.pf-thumb--active]="selectedImage() === image.image_url"
+                (click)="selectedImage.set(image.image_url)"
+              >
+                <img [src]="image.image_url" [alt]="image.alt_text || item.name" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ---------------------------------------------------------- info -->
+      <div class="pf-detail__info">
+        <h1>{{ item.name }}</h1>
+
+        <div class="pf-detail__status">
+          <pf-status [status]="item.stock_status" />
+          @if (!item.is_available) {
+            <span class="pf-muted">Not available right now</span>
+          }
+        </div>
+
+        <p class="pf-detail__price">{{ item.price_display }}</p>
+
+        @if (item.short_description) {
+          <p class="pf-detail__lead">{{ item.short_description }}</p>
+        }
+
+        @if (canBuy()) {
+          <div class="pf-buy">
+            <div class="pf-qty">
+              <label class="pf-label" for="quantity">Quantity ({{ item.unit.toLowerCase() }})</label>
+              <div class="pf-qty__controls">
+                <button type="button" class="pf-qty__btn" (click)="step(-1)" aria-label="Decrease">
+                  −
+                </button>
+                <input
+                  id="quantity"
+                  type="text"
+                  class="pf-input pf-qty__input"
+                  [(ngModel)]="quantity"
+                  inputmode="decimal"
+                />
+                <button type="button" class="pf-qty__btn" (click)="step(1)" aria-label="Increase">
+                  +
+                </button>
+              </div>
+              <span class="pf-hint">
+                Minimum {{ item.minimum_order_quantity | qty }} {{ item.unit.toLowerCase() }}
+                @if (item.maximum_order_quantity) {
+                  , maximum {{ item.maximum_order_quantity | qty }}
+                }
+              </span>
+            </div>
+
+            @if (addError()) {
+              <div class="pf-alert pf-alert--error" role="alert">{{ addError() }}</div>
+            }
+
+            <button
+              type="button"
+              class="pf-button pf-button--block"
+              [disabled]="adding()"
+              (click)="addToCart()"
+            >
+              {{ adding() ? 'Adding…' : isSignedIn() ? 'Add to basket' : 'Sign in to buy' }}
+            </button>
+          </div>
+        } @else {
+          <div class="pf-alert pf-alert--info">
+            This product is not available at the moment. Please check back soon.
+          </div>
+        }
+
+        @if (item.description) {
+          <section class="pf-detail__section">
+            <h2>About this product</h2>
+            <p>{{ item.description }}</p>
+          </section>
+        }
+
+        <dl class="pf-detail__meta">
+          <div>
+            <dt>Sold by</dt>
+            <dd>{{ item.unit.toLowerCase() }}</dd>
+          </div>
+          <div>
+            <dt>Product code</dt>
+            <dd>{{ item.sku }}</dd>
+          </div>
+          @if (item.category) {
+            <div>
+              <dt>Category</dt>
+              <dd>
+                <a [routerLink]="['/categories', item.category.slug]">{{ item.category.name }}</a>
+              </dd>
+            </div>
+          }
+        </dl>
+      </div>
+    </div>
+  }
+</div>

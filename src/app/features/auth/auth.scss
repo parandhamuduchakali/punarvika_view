@@ -1,0 +1,49 @@
+/* Shared layout for the sign-in, register and password pages. */
+
+.pf-auth {
+  max-width: 26rem;
+  margin: 2rem auto;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  box-shadow: var(--pf-shadow);
+  padding: 1.75rem;
+}
+
+.pf-auth h1 {
+  margin-bottom: 0.25rem;
+  color: var(--pf-green-dark);
+}
+
+.pf-auth > .pf-muted {
+  margin: 0 0 1.5rem;
+  font-size: 0.925rem;
+}
+
+.pf-auth__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pf-border);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.pf-auth__row {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 520px) {
+  .pf-auth {
+    margin: 1rem auto;
+    padding: 1.25rem;
+    border-radius: var(--pf-radius);
+  }
+  .pf-auth__row {
+    grid-template-columns: 1fr;
+  }
+}

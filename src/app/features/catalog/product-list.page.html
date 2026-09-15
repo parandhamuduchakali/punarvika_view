@@ -1,0 +1,168 @@
+<div class="pf-container pf-page">
+  <h1>The farm shop</h1>
+
+  <div class="pf-shop">
+    <!-- ---------------------------------------------------------- filters -->
+    <aside class="pf-filters" [formGroup]="filters">
+      <h2 class="pf-filters__title">Filter</h2>
+
+      <div class="pf-field">
+        <label class="pf-label" for="q">Search</label>
+        <input
+          id="q"
+          type="search"
+          class="pf-input"
+          formControlName="q"
+          placeholder="Milk, eggs, chicken…"
+        />
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="category">Category</label>
+        <select
+          id="category"
+          class="pf-select"
+          formControlName="category"
+          (change)="applyFilters()"
+        >
+          <option value="">All categories</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.slug">{{ category.name }}</option>
+            @for (child of category.children; track child.id) {
+              <option [value]="child.slug">&nbsp;&nbsp;{{ child.name }}</option>
+            }
+          }
+        </select>
+      </div>
+
+      <fieldset class="pf-field pf-price-range">
+        <legend class="pf-label">Price (₹)</legend>
+        <div class="pf-price-range__inputs">
+          <input
+            type="number"
+            class="pf-input"
+            formControlName="min_price"
+            placeholder="Min"
+            min="0"
+            inputmode="decimal"
+            aria-label="Minimum price"
+            (change)="applyFilters()"
+          />
+          <span aria-hidden="true">–</span>
+          <input
+            type="number"
+            class="pf-input"
+            formControlName="max_price"
+            placeholder="Max"
+            min="0"
+            inputmode="decimal"
+            aria-label="Maximum price"
+            (change)="applyFilters()"
+          />
+        </div>
+      </fieldset>
+
+      <div class="pf-field pf-check">
+        <input
+          id="available_only"
+          type="checkbox"
+          formControlName="available_only"
+          (change)="applyFilters()"
+        />
+        <label for="available_only">Available now only</label>
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="sort">Sort by</label>
+        <select id="sort" class="pf-select" formControlName="sort" (change)="applyFilters()">
+          <option value="newest">Newest first</option>
+          <option value="price_asc">Price: low to high</option>
+          <option value="price_desc">Price: high to low</option>
+          <option value="name_asc">Name: A to Z</option>
+          <option value="name_desc">Name: Z to A</option>
+        </select>
+      </div>
+
+      <button type="button" class="pf-button pf-button--ghost pf-button--block" (click)="clearFilters()">
+        Clear filters
+      </button>
+    </aside>
+
+    <!-- ---------------------------------------------------------- results -->
+    <section class="pf-results">
+      @if (loading()) {
+        <pf-loading label="Loading products" />
+      } @else if (failed()) {
+        <pf-error message="We could not load the products." (retry)="load()" />
+      } @else if (result(); as page) {
+        @if (page.items.length === 0) {
+          <pf-empty
+            icon="🔍"
+            title="No products match"
+            message="Try a different search, or clear the filters."
+          >
+            <button type="button" class="pf-button pf-button--ghost" (click)="clearFilters()">
+              Clear filters
+            </button>
+          </pf-empty>
+        } @else {
+          <p class="pf-results__count pf-muted">
+            Showing {{ showingFrom() }}–{{ showingTo() }} of {{ page.total }}
+          </p>
+
+          <div class="pf-grid">
+            @for (product of page.items; track product.id) {
+              <a class="pf-product" [routerLink]="['/products', product.id]">
+                <div class="pf-product__image">
+                  @if (product.image_url) {
+                    <img [src]="product.image_url" [alt]="product.name" loading="lazy" />
+                  } @else {
+                    <span class="pf-product__placeholder" aria-hidden="true">🌾</span>
+                  }
+                  @if (!product.is_available || product.stock_status === 'OUT_OF_STOCK') {
+                    <span class="pf-product__flag">Sold out</span>
+                  } @else if (product.stock_status === 'LOW_STOCK') {
+                    <span class="pf-product__flag pf-product__flag--low">Nearly gone</span>
+                  }
+                </div>
+                <div class="pf-product__body">
+                  <h3 class="pf-product__name">{{ product.name }}</h3>
+                  @if (product.short_description) {
+                    <p class="pf-product__desc">{{ product.short_description }}</p>
+                  }
+                  <p class="pf-price">
+                    {{ product.price | inr }}
+                    <span class="pf-muted pf-product__unit">
+                      / {{ product.unit.toLowerCase() }}
+                    </span>
+                  </p>
+                </div>
+              </a>
+            }
+          </div>
+
+          @if (hasPrevious() || hasNext()) {
+            <nav class="pf-pager" aria-label="Pagination">
+              <button
+                type="button"
+                class="pf-button pf-button--ghost"
+                [disabled]="!hasPrevious()"
+                (click)="goToPage(page.offset - pageSize)"
+              >
+                &larr; Previous
+              </button>
+              <button
+                type="button"
+                class="pf-button pf-button--ghost"
+                [disabled]="!hasNext()"
+                (click)="goToPage(page.offset + pageSize)"
+              >
+                Next &rarr;
+              </button>
+            </nav>
+          }
+        }
+      }
+    </section>
+  </div>
+</div>
