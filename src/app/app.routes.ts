@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { guestGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 /**
  * Every feature is lazily loaded, so a first-time visitor browsing the shop does
@@ -59,6 +59,34 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/reset-password.page').then((m) => m.ResetPasswordPage),
     title: 'Set a new password — Punarvika Farms',
+  },
+
+  // ------------------------------------------------------ basket and pay
+  {
+    path: 'cart',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cart/cart.page').then((m) => m.CartPage),
+    title: 'Your basket — Punarvika Farms',
+  },
+  {
+    path: 'checkout',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/checkout/checkout.page').then((m) => m.CheckoutPage),
+    title: 'Checkout — Punarvika Farms',
+  },
+  {
+    path: 'payment/success',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/checkout/payment-result.page').then((m) => m.PaymentSuccessPage),
+    title: 'Order confirmed — Punarvika Farms',
+  },
+  {
+    path: 'payment/failed',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/checkout/payment-result.page').then((m) => m.PaymentFailedPage),
+    title: 'Payment failed — Punarvika Farms',
   },
 
   {

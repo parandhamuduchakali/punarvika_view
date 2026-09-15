@@ -1,0 +1,197 @@
+<div class="pf-container pf-page">
+  <h1>Checkout</h1>
+
+  @if (loading()) {
+    <pf-loading label="Preparing your order" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your checkout." (retry)="load()" />
+  } @else if (step() === 'review') {
+    @if (error()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ error() }}</div>
+    }
+
+    <div class="pf-checkout">
+      <div class="pf-checkout__main">
+        <!-- ------------------------------------------------------ address -->
+        <section class="pf-card pf-checkout__section">
+          <h2>Delivery address</h2>
+
+          @if (addresses().length === 0) {
+            <p class="pf-muted">You have not saved a delivery address yet.</p>
+            <a routerLink="/addresses" class="pf-button pf-button--ghost">Add an address</a>
+          } @else {
+            <div class="pf-addresses">
+              @for (address of addresses(); track address.id) {
+                <label class="pf-address" [class.pf-address--selected]="selectedAddressId === address.id">
+                  <input
+                    type="radio"
+                    name="address"
+                    [value]="address.id"
+                    [(ngModel)]="selectedAddressId"
+                  />
+                  <span class="pf-address__body">
+                    <strong>{{ address.contact_name }}</strong>
+                    @if (address.is_default) {
+                      <span class="pf-address__default">Default</span>
+                    }
+                    <span class="pf-muted">
+                      {{ address.line1 }}@if (address.line2) {, {{ address.line2 }}}<br />
+                      {{ address.city }}, {{ address.state }} {{ address.pincode }}<br />
+                      {{ address.contact_phone }}
+                    </span>
+                  </span>
+                </label>
+              }
+            </div>
+            <a routerLink="/addresses" class="pf-checkout__link">Manage addresses</a>
+          }
+        </section>
+
+        <!-- ------------------------------------------------------ payment -->
+        <section class="pf-card pf-checkout__section">
+          <h2>Payment method</h2>
+          <p class="pf-muted pf-checkout__hint">
+            We accept UPI and credit or debit cards only.
+          </p>
+
+          <div class="pf-methods">
+            <label class="pf-method" [class.pf-method--selected]="method === 'UPI'">
+              <input type="radio" name="method" value="UPI" [(ngModel)]="method" />
+              <span>
+                <strong>UPI</strong>
+                <span class="pf-muted">Google Pay, PhonePe, Paytm and others</span>
+              </span>
+            </label>
+            <label class="pf-method" [class.pf-method--selected]="method === 'CARD'">
+              <input type="radio" name="method" value="CARD" [(ngModel)]="method" />
+              <span>
+                <strong>Credit or debit card</strong>
+                <span class="pf-muted">Visa, Mastercard, RuPay</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <!-- -------------------------------------------------------- notes -->
+        <section class="pf-card pf-checkout__section">
+          <h2>Delivery notes <span class="pf-muted">(optional)</span></h2>
+          <textarea
+            class="pf-textarea"
+            [(ngModel)]="notes"
+            maxlength="500"
+            placeholder="Landmark, gate code, preferred delivery time…"
+          ></textarea>
+        </section>
+      </div>
+
+      <!-- -------------------------------------------------------- summary -->
+      <aside class="pf-summary">
+        <h2>Your order</h2>
+
+        @if (cart(); as basket) {
+          <ul class="pf-summary__items">
+            @for (item of basket.items; track item.id) {
+              @if (!item.issue) {
+                <li>
+                  <span class="pf-summary__item-name">
+                    {{ item.product_name }}
+                    <span class="pf-muted">
+                      × {{ item.quantity | qty }} {{ item.unit.toLowerCase() }}
+                    </span>
+                  </span>
+                  <span>{{ item.line_total | inr }}</span>
+                </li>
+              }
+            }
+          </ul>
+
+          <dl class="pf-summary__lines">
+            <div>
+              <dt>Subtotal</dt>
+              <dd>{{ basket.pricing.subtotal | inr }}</dd>
+            </div>
+            @if (basket.pricing.tax_amount !== '0.00') {
+              <div>
+                <dt>Tax</dt>
+                <dd>{{ basket.pricing.tax_amount | inr }}</dd>
+              </div>
+            }
+            <div>
+              <dt>Delivery</dt>
+              <dd>
+                @if (basket.pricing.delivery_charge === '0.00') {
+                  <span class="pf-free">Free</span>
+                } @else {
+                  {{ basket.pricing.delivery_charge | inr }}
+                }
+              </dd>
+            </div>
+          </dl>
+
+          <div class="pf-summary__total">
+            <span>Total</span>
+            <span class="pf-price">{{ basket.pricing.total_amount | inr }}</span>
+          </div>
+        }
+
+        <button
+          type="button"
+          class="pf-button pf-button--block"
+          [disabled]="!canPlace || submitting()"
+          (click)="placeOrder()"
+        >
+          {{ submitting() ? 'Placing your order…' : 'Place order and pay' }}
+        </button>
+
+        <p class="pf-hint pf-summary__note">
+          The farm confirms the final amount from its own prices when the order is placed.
+        </p>
+      </aside>
+    </div>
+  } @else if (step() === 'paying') {
+    <!-- ------------------------------------------------------------ pay -->
+    <div class="pf-pay">
+      @if (order(); as placed) {
+        <div class="pf-card pf-pay__card">
+          <h2>Pay for order {{ placed.order_number }}</h2>
+          <p class="pf-pay__amount">{{ placed.total_amount | inr }}</p>
+          <p class="pf-muted">Paying by {{ method === 'UPI' ? 'UPI' : 'card' }}.</p>
+
+          @if (isMockGateway) {
+            <div class="pf-alert pf-alert--info">
+              <strong>Development mode.</strong> No real gateway is configured, so payment
+              is simulated here. With a live gateway this is replaced by the provider's
+              secure checkout window.
+            </div>
+
+            <div class="pf-pay__actions">
+              <button
+                type="button"
+                class="pf-button"
+                [disabled]="submitting()"
+                (click)="completeMockPayment('success')"
+              >
+                {{ submitting() ? 'Processing…' : 'Simulate a successful payment' }}
+              </button>
+              <button
+                type="button"
+                class="pf-button pf-button--ghost"
+                [disabled]="submitting()"
+                (click)="completeMockPayment('failed')"
+              >
+                Simulate a failed payment
+              </button>
+            </div>
+          } @else {
+            <p>Continue in the secure payment window to complete your order.</p>
+          }
+
+          <p class="pf-hint">
+            Your order is held for you. If payment does not complete, you can retry it from
+            <a [routerLink]="['/orders', placed.id]">your orders</a>.
+          </p>
+        </div>
+      }
+    </div>
+  }
+</div>
