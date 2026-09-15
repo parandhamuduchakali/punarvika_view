@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { adminGuard, authGuard, guestGuard } from './core/guards/auth.guard';
 
 /**
  * Every feature is lazily loaded, so a first-time visitor browsing the shop does
@@ -113,6 +113,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/profile/addresses.page').then((m) => m.AddressesPage),
     title: 'Delivery addresses — Punarvika Farms',
+  },
+
+  // ----------------------------------------------------------------- admin
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
 
   {

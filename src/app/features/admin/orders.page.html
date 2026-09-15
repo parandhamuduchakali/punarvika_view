@@ -1,0 +1,149 @@
+<div class="pf-admin-head">
+  <h2>Orders</h2>
+  <div class="pf-field" style="margin: 0; min-width: 14rem">
+    <label class="pf-sr-only" for="status">Filter by status</label>
+    <select id="status" class="pf-select" [(ngModel)]="status" (change)="onFilterChange()">
+      @for (option of statuses; track option) {
+        <option [value]="option">{{ option ? label(option) : 'All statuses' }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+<!-- --------------------------------------------------------------- detail -->
+@if (selected(); as order) {
+  <section class="pf-admin-form pf-order-detail">
+    <div class="pf-admin-head">
+      <h3>{{ order.order_number }}</h3>
+      <button type="button" class="pf-link-button" (click)="close()">Close</button>
+    </div>
+
+    <div class="pf-order-detail__grid">
+      <div>
+        <h4>Items</h4>
+        <ul class="pf-detail-list">
+          @for (item of order.items; track item.id) {
+            <li>
+              <span>
+                {{ item.product_name }}
+                <span class="pf-muted">
+                  × {{ item.quantity | qty }} {{ item.unit.toLowerCase() }}
+                </span>
+              </span>
+              <span>{{ item.line_total | inr }}</span>
+            </li>
+          }
+          <li class="pf-detail-list__total">
+            <span>Total</span>
+            <span>{{ order.total_amount | inr }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Delivering to</h4>
+        <address class="pf-address-block">
+          <strong>{{ order.delivery_address.contact_name }}</strong><br />
+          {{ order.delivery_address.line1 }}<br />
+          @if (order.delivery_address.line2) {
+            {{ order.delivery_address.line2 }}<br />
+          }
+          {{ order.delivery_address.city }}, {{ order.delivery_address.state }}
+          {{ order.delivery_address.pincode }}<br />
+          {{ order.delivery_address.contact_phone }}
+        </address>
+        @if (order.notes) {
+          <p class="pf-hint"><strong>Note:</strong> {{ order.notes }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="pf-order-detail__actions">
+      <span class="pf-muted">Currently:</span>
+      <pf-status [status]="order.status" />
+
+      @if (nextStatuses(order.status).length > 0) {
+        <span class="pf-muted">Move to:</span>
+        @for (next of nextStatuses(order.status); track next) {
+          <button
+            type="button"
+            class="pf-button pf-button--ghost pf-button--compact"
+            [class.pf-button--danger]="next === 'CANCELLED'"
+            [disabled]="busy()"
+            (click)="moveTo(order, next)"
+          >
+            {{ label(next) }}
+          </button>
+        }
+      } @else {
+        <span class="pf-muted">This order has reached its final state.</span>
+      }
+    </div>
+  </section>
+}
+
+<!-- ----------------------------------------------------------------- list -->
+@if (loading()) {
+  <pf-loading label="Loading orders" />
+} @else if (failed()) {
+  <pf-error message="We could not load the orders." (retry)="load()" />
+} @else if (result(); as page) {
+  <section class="pf-admin-table">
+    <div class="pf-table-wrap">
+      <table class="pf-table">
+        <caption class="pf-sr-only">Every order placed with the farm</caption>
+        <thead>
+          <tr>
+            <th scope="col">Order</th>
+            <th scope="col">Placed</th>
+            <th scope="col" class="pf-numeric">Items</th>
+            <th scope="col" class="pf-numeric">Total</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of page.items; track order.id) {
+            <tr>
+              <td><strong>{{ order.order_number }}</strong></td>
+              <td>{{ order.created_at | date: 'd MMM yyyy' }}</td>
+              <td class="pf-numeric">{{ order.item_count }}</td>
+              <td class="pf-numeric">{{ order.total_amount | inr }}</td>
+              <td><pf-status [status]="order.status" /></td>
+              <td>
+                <button type="button" class="pf-link-button" (click)="open(order)">
+                  Manage
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="pf-muted">No orders match.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (hasPrevious() || hasNext()) {
+    <nav class="pf-pager" aria-label="Pagination">
+      <button
+        type="button"
+        class="pf-button pf-button--ghost"
+        [disabled]="!hasPrevious()"
+        (click)="goToPage(page.offset - pageSize)"
+      >
+        &larr; Newer
+      </button>
+      <button
+        type="button"
+        class="pf-button pf-button--ghost"
+        [disabled]="!hasNext()"
+        (click)="goToPage(page.offset + pageSize)"
+      >
+        Older &rarr;
+      </button>
+    </nav>
+  }
+}

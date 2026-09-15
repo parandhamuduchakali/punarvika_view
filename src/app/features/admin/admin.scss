@@ -1,0 +1,262 @@
+/* Shared by every page in the farm management area. */
+
+.pf-admin__title {
+  margin-bottom: 1.25rem;
+}
+
+.pf-admin {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.pf-admin__nav {
+  display: flex;
+  flex-direction: column;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  overflow: hidden;
+  position: sticky;
+  top: 88px;
+}
+.pf-admin__nav a {
+  padding: 0.75rem 1rem;
+  color: inherit;
+  font-size: 0.925rem;
+  font-weight: 550;
+  border-left: 3px solid transparent;
+}
+.pf-admin__nav a:hover {
+  text-decoration: none;
+  background: var(--pf-surface-2);
+}
+.pf-admin__link--active {
+  background: var(--pf-green-light) !important;
+  border-left-color: var(--pf-green) !important;
+  color: var(--pf-green-dark) !important;
+}
+
+.pf-admin__content {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------ page header */
+.pf-admin-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.pf-admin-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* ------------------------------------------------------------------ stats */
+.pf-stats {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin-bottom: 1.75rem;
+}
+.pf-stat {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.15rem;
+}
+.pf-stat__label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pf-muted);
+  margin-bottom: 0.3rem;
+}
+.pf-stat__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--pf-green-dark);
+}
+
+/* ----------------------------------------------------------------- tables */
+.pf-admin-table {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  overflow: hidden;
+}
+.pf-admin-table .pf-table th {
+  background: var(--pf-surface-2);
+}
+.pf-admin-table .pf-table tr:last-child td {
+  border-bottom: none;
+}
+.pf-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ forms */
+.pf-admin-form {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.pf-admin-form h3 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+.pf-form-row {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+.pf-form-row--three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.pf-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.pf-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pf-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pf-green);
+}
+.pf-check label {
+  font-size: 0.925rem;
+}
+
+.pf-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--pf-green);
+  cursor: pointer;
+}
+.pf-link-button:hover {
+  text-decoration: underline;
+}
+.pf-link-button--danger {
+  color: var(--pf-danger);
+}
+
+.pf-row-actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.pf-pager {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.pf-inactive {
+  opacity: 0.6;
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 860px) {
+  .pf-admin {
+    grid-template-columns: 1fr;
+  }
+  .pf-admin__nav {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .pf-admin__nav a {
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  .pf-admin__link--active {
+    border-left-color: transparent !important;
+    border-bottom-color: var(--pf-green) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pf-form-row,
+  .pf-form-row--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------- admin order detail */
+.pf-order-detail {
+  border-color: var(--pf-green);
+}
+.pf-order-detail__grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-bottom: 1.25rem;
+}
+.pf-order-detail h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pf-muted);
+  margin: 0 0 0.6rem;
+}
+
+.pf-detail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+.pf-detail-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.pf-detail-list__total {
+  border-top: 1px solid var(--pf-border);
+  padding-top: 0.45rem;
+  font-weight: 700;
+}
+
+.pf-order-detail__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--pf-border);
+  font-size: 0.9rem;
+}
+
+.pf-button--compact {
+  min-height: 36px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.pf-address-block {
+  font-style: normal;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
