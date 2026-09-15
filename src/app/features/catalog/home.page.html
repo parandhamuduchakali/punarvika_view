@@ -1,0 +1,112 @@
+<section class="pf-hero">
+  <div class="pf-container pf-hero__inner">
+    <div class="pf-hero__copy">
+      <h1>Fresh from our farm to your kitchen</h1>
+      <p>
+        Buffalo and cow milk drawn each morning, country eggs, native chicken and seasonal
+        produce &mdash; grown and raised on Punarvika Farms, delivered straight to you.
+      </p>
+      <div class="pf-hero__actions">
+        <a routerLink="/products" class="pf-button">Shop the farm</a>
+        <a routerLink="/products" [queryParams]="{ category: 'dairy' }" class="pf-button pf-button--ghost">
+          Fresh milk
+        </a>
+      </div>
+    </div>
+    <img src="assets/logo.jpeg" alt="Punarvika Farms" class="pf-hero__image" />
+  </div>
+</section>
+
+<div class="pf-container pf-page">
+  @if (loading()) {
+    <pf-loading label="Loading the farm shop" />
+  } @else if (failed()) {
+    <pf-error
+      message="We could not load the shop just now."
+      (retry)="load()"
+    />
+  } @else {
+    <!-- ------------------------------------------------------- categories -->
+    @if (categories().length > 0) {
+      <section class="pf-section">
+        <h2>Shop by category</h2>
+        <div class="pf-categories">
+          @for (category of categories(); track category.id) {
+            <a class="pf-category" [routerLink]="['/categories', category.slug]">
+              <span class="pf-category__name">{{ category.name }}</span>
+              @if (category.children.length > 0) {
+                <span class="pf-category__children">
+                  {{ category.children.length }} kinds
+                </span>
+              }
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- --------------------------------------------------------- products -->
+    <section class="pf-section">
+      <div class="pf-section__head">
+        <h2>Fresh today</h2>
+        <a routerLink="/products">See everything &rarr;</a>
+      </div>
+
+      @if (featured().length === 0) {
+        <pf-empty
+          icon="🥛"
+          title="Nothing in the shop yet"
+          message="The farm has not listed any products. Please check back soon."
+        />
+      } @else {
+        <div class="pf-grid">
+          @for (product of featured(); track product.id) {
+            <a class="pf-product" [routerLink]="['/products', product.id]">
+              <div class="pf-product__image">
+                @if (product.image_url) {
+                  <img [src]="product.image_url" [alt]="product.name" loading="lazy" />
+                } @else {
+                  <span class="pf-product__placeholder" aria-hidden="true">🌾</span>
+                }
+                @if (product.stock_status === 'OUT_OF_STOCK') {
+                  <span class="pf-product__flag">Sold out</span>
+                } @else if (product.stock_status === 'LOW_STOCK') {
+                  <span class="pf-product__flag pf-product__flag--low">Nearly gone</span>
+                }
+              </div>
+              <div class="pf-product__body">
+                <h3 class="pf-product__name">{{ product.name }}</h3>
+                @if (product.short_description) {
+                  <p class="pf-product__desc">{{ product.short_description }}</p>
+                }
+                <p class="pf-price">
+                  {{ product.price | inr }}
+                  <span class="pf-muted pf-product__unit">/ {{ product.unit.toLowerCase() }}</span>
+                </p>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- ------------------------------------------------------------ trust -->
+    <section class="pf-section pf-promises">
+      <div class="pf-promise">
+        <span aria-hidden="true">🌱</span>
+        <h3>Grown on our farm</h3>
+        <p>No middlemen. What you order is what we produce.</p>
+      </div>
+      <div class="pf-promise">
+        <span aria-hidden="true">🚚</span>
+        <h3>Delivered fresh</h3>
+        <p>Milk drawn in the morning reaches you the same day.</p>
+      </div>
+      <div class="pf-promise">
+        <span aria-hidden="true">🔒</span>
+        <h3>Pay securely</h3>
+        <p>UPI and cards only, handled by our payment provider.</p>
+      </div>
+    </section>
+  }
+</div>

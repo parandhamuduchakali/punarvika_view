@@ -1,0 +1,95 @@
+<a class="pf-skip" href="#main">Skip to content</a>
+
+<header class="pf-header">
+  <div class="pf-container pf-header__inner">
+    <a class="pf-brand" routerLink="/" (click)="closeMenu()">
+      <img src="assets/logo.jpeg" alt="" width="40" height="40" class="pf-brand__logo" />
+      <span class="pf-brand__text">
+        <strong>Punarvika Farms</strong>
+        <small>Fresh from our farm</small>
+      </span>
+    </a>
+
+    <button
+      type="button"
+      class="pf-burger"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="pf-nav"
+      aria-label="Menu"
+      (click)="toggleMenu()"
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
+
+    <nav id="pf-nav" class="pf-nav" [class.pf-nav--open]="menuOpen()" aria-label="Main">
+      <a routerLink="/products" routerLinkActive="pf-nav__link--active" (click)="closeMenu()"
+        >Shop</a
+      >
+
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/orders" routerLinkActive="pf-nav__link--active" (click)="closeMenu()"
+          >Orders</a
+        >
+        <a routerLink="/profile" routerLinkActive="pf-nav__link--active" (click)="closeMenu()"
+          >Profile</a
+        >
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" routerLinkActive="pf-nav__link--active" (click)="closeMenu()"
+            >Farm admin</a
+          >
+        }
+        <a routerLink="/cart" class="pf-nav__cart" (click)="closeMenu()">
+          Basket
+          @if (cart.itemCount() > 0) {
+            <span class="pf-badge" aria-label="{{ cart.itemCount() }} items in basket">{{
+              cart.itemCount()
+            }}</span>
+          }
+        </a>
+        <button type="button" class="pf-nav__signout" (click)="signOut()">Sign out</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="pf-nav__link--active" (click)="closeMenu()"
+          >Sign in</a
+        >
+        <a routerLink="/register" class="pf-button pf-button--small" (click)="closeMenu()"
+          >Create account</a
+        >
+      }
+    </nav>
+  </div>
+</header>
+
+<!-- Transient messages. Field-level validation is rendered against its field. -->
+@if (notifications.notices().length > 0) {
+  <div class="pf-notices" role="status" aria-live="polite">
+    @for (notice of notifications.notices(); track notice.id) {
+      <div class="pf-alert pf-alert--{{ notice.kind }} pf-notice">
+        <span>{{ notice.message }}</span>
+        <button
+          type="button"
+          class="pf-notice__close"
+          aria-label="Dismiss"
+          (click)="notifications.dismiss(notice.id)"
+        >
+          ×
+        </button>
+      </div>
+    }
+  </div>
+}
+
+<main id="main" class="pf-main">
+  <router-outlet />
+</main>
+
+<footer class="pf-footer">
+  <div class="pf-container">
+    <p>
+      <strong>Punarvika Farms</strong> — milk, poultry, eggs and farm produce, delivered from
+      our farm.
+    </p>
+    <p class="pf-muted pf-footer__small">
+      We accept UPI and credit or debit cards only. &copy; {{ year }} Punarvika Farms.
+    </p>
+  </div>
+</footer>

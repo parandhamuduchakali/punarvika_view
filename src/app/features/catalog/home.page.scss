@@ -1,0 +1,199 @@
+.pf-hero {
+  background: linear-gradient(180deg, var(--pf-green-light) 0%, var(--pf-bg) 100%);
+  border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-hero__inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.pf-hero__copy {
+  flex: 1 1 auto;
+}
+.pf-hero__copy h1 {
+  color: var(--pf-green-dark);
+  margin-bottom: 0.6rem;
+}
+.pf-hero__copy p {
+  max-width: 52ch;
+  color: var(--pf-muted);
+  margin: 0 0 1.25rem;
+}
+
+.pf-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pf-hero__image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid #fff;
+  box-shadow: var(--pf-shadow);
+  flex: 0 0 auto;
+}
+
+.pf-section {
+  margin-bottom: 2.75rem;
+}
+.pf-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ------------------------------------------------------------ categories */
+.pf-categories {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.pf-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1rem;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.pf-category:hover {
+  text-decoration: none;
+  border-color: var(--pf-green);
+  transform: translateY(-2px);
+}
+.pf-category__name {
+  font-weight: 650;
+}
+.pf-category__children {
+  font-size: 0.8rem;
+  color: var(--pf-muted);
+}
+
+/* -------------------------------------------------------------- products */
+.pf-product {
+  display: flex;
+  flex-direction: column;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  overflow: hidden;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.pf-product:hover {
+  text-decoration: none;
+  border-color: var(--pf-green);
+  transform: translateY(-2px);
+}
+
+.pf-product__image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--pf-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pf-product__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pf-product__placeholder {
+  font-size: 2.5rem;
+  opacity: 0.35;
+}
+.pf-product__flag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: var(--pf-danger);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+.pf-product__flag--low {
+  background: #96590a;
+}
+
+.pf-product__body {
+  padding: 0.85rem 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+}
+.pf-product__name {
+  margin: 0;
+  font-size: 1rem;
+}
+.pf-product__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--pf-muted);
+  flex: 1 1 auto;
+}
+.pf-product__unit {
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+/* -------------------------------------------------------------- promises */
+.pf-promises {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.pf-promise {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+.pf-promise span {
+  font-size: 1.75rem;
+}
+.pf-promise h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1rem;
+}
+.pf-promise p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--pf-muted);
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 720px) {
+  .pf-hero__inner {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding-top: 1.75rem;
+    padding-bottom: 1.75rem;
+  }
+  .pf-hero__actions {
+    justify-content: center;
+  }
+  .pf-hero__image {
+    width: 120px;
+    height: 120px;
+  }
+  .pf-hero__copy p {
+    margin-inline: auto;
+  }
+}
