@@ -164,3 +164,19 @@
     aspect-ratio: 4 / 3;
   }
 }
+
+/* ----------------------------------------------------------------- rating */
+.pf-detail__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+.pf-detail__stars span {
+  color: var(--pf-border);
+  font-size: 1.05rem;
+}
+.pf-detail__stars .pf-star--on {
+  color: #d99b0b;
+}

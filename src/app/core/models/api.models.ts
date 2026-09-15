@@ -130,6 +130,64 @@ export interface ProductDetail extends ProductSummary {
   images: ProductImage[];
   category: Category | null;
   price_display: string;
+  /** Averaged over approved reviews only; null until there are any. */
+  rating_average: number | null;
+  rating_count: number;
+}
+
+// ---------------------------------------------------------------- reviews
+export interface Review {
+  id: number;
+  product_id: number;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  /** First name only -- the API never publishes the email or surname. */
+  author: string;
+  is_approved: boolean;
+  created_at: string;
+}
+
+export interface MyReview extends Review {
+  product_name: string;
+}
+
+export interface AdminReview extends Review {
+  user_id: number;
+  product_name: string;
+  order_id: number | null;
+  moderation_note: string | null;
+}
+
+export interface RatingSummary {
+  average: number | null;
+  count: number;
+}
+
+export interface ReviewPayload {
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+}
+
+// ---------------------------------------------------------------- coupons
+export type DiscountType = 'PERCENT' | 'FLAT';
+
+export interface AdminCoupon {
+  id: number;
+  code: string;
+  description: string | null;
+  discount_type: DiscountType;
+  value: string;
+  max_discount_amount: string | null;
+  minimum_order_value: string;
+  usage_limit: number;
+  per_customer_limit: number;
+  valid_from: string | null;
+  valid_until: string | null;
+  is_active: boolean;
+  created_at: string;
+  times_redeemed: number;
 }
 
 export interface ProductQuery {
@@ -175,6 +233,10 @@ export interface Cart {
   pricing: PriceBreakdown;
   item_count: number;
   has_issues: boolean;
+  /** The coupon the server accepted, which may differ in case from what was typed. */
+  coupon_code: string | null;
+  /** Why a supplied coupon could not be applied. The cart still renders. */
+  coupon_error: string | null;
 }
 
 // ----------------------------------------------------------------- orders
@@ -225,6 +287,7 @@ export interface OrderSummary {
 }
 
 export interface OrderDetail extends OrderSummary {
+  coupon_code: string | null;
   subtotal: string;
   discount_amount: string;
   tax_amount: string;

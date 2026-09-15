@@ -22,6 +22,8 @@ function cartResponse(overrides: Partial<Cart> = {}): Cart {
     },
     item_count: 0,
     has_issues: false,
+    coupon_code: null,
+    coupon_error: null,
     ...overrides,
   };
 }

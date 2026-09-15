@@ -37,6 +37,16 @@ export const ADMIN_ROUTES: Routes = [
         title: 'Inventory — Farm admin',
       },
       {
+        path: 'coupons',
+        loadComponent: () => import('./coupons.page').then((m) => m.AdminCouponsPage),
+        title: 'Coupons — Farm admin',
+      },
+      {
+        path: 'reviews',
+        loadComponent: () => import('./reviews.page').then((m) => m.AdminReviewsPage),
+        title: 'Reviews — Farm admin',
+      },
+      {
         path: 'orders',
         loadComponent: () => import('./orders.page').then((m) => m.AdminOrdersPage),
         title: 'Orders — Farm admin',

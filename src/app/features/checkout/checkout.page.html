@@ -110,6 +110,12 @@
               <dt>Subtotal</dt>
               <dd>{{ basket.pricing.subtotal | inr }}</dd>
             </div>
+            @if (basket.coupon_code) {
+              <div>
+                <dt>Coupon {{ basket.coupon_code }}</dt>
+                <dd class="pf-discount">−{{ basket.pricing.discount_amount | inr }}</dd>
+              </div>
+            }
             @if (basket.pricing.tax_amount !== '0.00') {
               <div>
                 <dt>Tax</dt>

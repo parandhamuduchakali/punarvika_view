@@ -14,10 +14,16 @@ export class OrderService {
    * Places the order. The request carries an address id and an optional note --
    * never a price or a total. The server recomputes everything from the cart.
    */
-  place(addressId: number, notes?: string | null): Observable<OrderDetail> {
+  place(
+    addressId: number,
+    notes?: string | null,
+    couponCode?: string | null,
+  ): Observable<OrderDetail> {
     return this.http.post<OrderDetail>(this.base, {
       address_id: addressId,
       notes: notes ?? null,
+      // A code, never an amount. The server decides what it is worth.
+      coupon_code: couponCode ?? null,
     });
   }
 

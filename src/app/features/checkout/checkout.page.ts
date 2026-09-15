@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { AppApiError } from '../../core/interceptors/error.interceptor';
@@ -52,6 +52,7 @@ export class CheckoutPage implements OnInit {
   private readonly orders = inject(OrderService);
   private readonly payments = inject(PaymentService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly notifications = inject(NotificationService);
   private readonly http = inject(HttpClient);
 
@@ -69,6 +70,8 @@ export class CheckoutPage implements OnInit {
   protected selectedAddressId: number | null = null;
   protected method: PaymentMethod = 'UPI';
   protected notes = '';
+  /** Carried from the cart. Re-validated and re-priced by the server. */
+  protected readonly coupon = this.route.snapshot.queryParamMap.get('coupon');
 
   ngOnInit(): void {
     this.load();
@@ -78,7 +81,7 @@ export class CheckoutPage implements OnInit {
     this.loading.set(true);
     this.failed.set(false);
 
-    this.cartService.load().subscribe({
+    this.cartService.load(this.coupon).subscribe({
       next: (cart) => {
         this.cart.set(cart);
         if (cart.items.length === 0) {
@@ -124,7 +127,7 @@ export class CheckoutPage implements OnInit {
     this.error.set(null);
     this.submitting.set(true);
 
-    this.orders.place(this.selectedAddressId, this.notes.trim() || null).subscribe({
+    this.orders.place(this.selectedAddressId, this.notes.trim() || null, this.coupon).subscribe({
       next: (order) => {
         this.order.set(order);
         // The basket is now converted server-side.

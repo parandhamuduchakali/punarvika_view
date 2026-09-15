@@ -1,0 +1,94 @@
+<section class="pf-reviews">
+  <div class="pf-reviews__head">
+    <h2>Customer reviews @if (total() > 0) { <span class="pf-muted">({{ total() }})</span> }</h2>
+
+    @if (canReview() && !formOpen()) {
+      <button type="button" class="pf-button pf-button--ghost" (click)="formOpen.set(true)">
+        Write a review
+      </button>
+    }
+  </div>
+
+  <!-- ---------------------------------------------------------- the form -->
+  @if (formOpen()) {
+    <div class="pf-card pf-review-form">
+      <h3>Your review</h3>
+
+      @if (formError()) {
+        <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+      }
+
+      <fieldset class="pf-field pf-rating-picker">
+        <legend class="pf-label">Rating</legend>
+        @for (star of stars; track star) {
+          <label class="pf-rating-picker__star">
+            <input type="radio" name="rating" [value]="star" [(ngModel)]="rating" />
+            <span [class.pf-star--on]="star <= rating" aria-hidden="true">★</span>
+            <span class="pf-sr-only">{{ star }} out of 5</span>
+          </label>
+        }
+      </fieldset>
+
+      <div class="pf-field">
+        <label class="pf-label" for="review-title">Title <span class="pf-muted">(optional)</span></label>
+        <input id="review-title" type="text" class="pf-input" [(ngModel)]="title" maxlength="150" />
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="review-body">Your thoughts <span class="pf-muted">(optional)</span></label>
+        <textarea id="review-body" class="pf-textarea" [(ngModel)]="body" maxlength="2000"></textarea>
+      </div>
+
+      <div class="pf-form-actions">
+        <button type="button" class="pf-button" [disabled]="submitting()" (click)="submit()">
+          {{ submitting() ? 'Sending…' : 'Submit review' }}
+        </button>
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="submitting()"
+          (click)="formOpen.set(false)"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <p class="pf-hint">
+        Reviews are checked by the farm before they appear. Only your first name is shown.
+      </p>
+    </div>
+  }
+
+  <!-- ---------------------------------------------------------- the list -->
+  @if (loading()) {
+    <pf-loading label="Loading reviews" />
+  } @else if (items().length === 0) {
+    <pf-empty
+      icon="💬"
+      title="No reviews yet"
+      message="Once customers have received this product, their reviews appear here."
+    />
+  } @else {
+    <ul class="pf-review-list">
+      @for (review of items(); track review.id) {
+        <li class="pf-review">
+          <div class="pf-review__head">
+            <span class="pf-review__stars" [attr.aria-label]="review.rating + ' out of 5'">
+              @for (star of stars; track star) {
+                <span aria-hidden="true" [class.pf-star--on]="star <= review.rating">★</span>
+              }
+            </span>
+            <span class="pf-review__author">{{ review.author }}</span>
+            <span class="pf-muted">{{ review.created_at | date: 'd MMM yyyy' }}</span>
+          </div>
+          @if (review.title) {
+            <h3 class="pf-review__title">{{ review.title }}</h3>
+          }
+          @if (review.body) {
+            <p class="pf-review__body">{{ review.body }}</p>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

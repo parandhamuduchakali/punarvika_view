@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
@@ -22,11 +22,20 @@ export class CartService {
   readonly cart = this._cart.asReadonly();
 
   readonly itemCount = computed(() => this._cart()?.item_count ?? 0);
+  readonly couponCode = computed(() => this._cart()?.coupon_code ?? null);
+  readonly couponError = computed(() => this._cart()?.coupon_error ?? null);
   readonly total = computed(() => this._cart()?.pricing.total_amount ?? '0.00');
   readonly hasIssues = computed(() => this._cart()?.has_issues ?? false);
 
-  load(): Observable<Cart> {
-    return this.http.get<Cart>(this.base).pipe(tap((cart) => this._cart.set(cart)));
+  /**
+   * `coupon` is a preview only. The server re-validates and re-prices it at
+   * checkout, so what is shown here can never become the amount charged.
+   */
+  load(coupon?: string | null): Observable<Cart> {
+    const params = coupon ? new HttpParams().set('coupon', coupon) : undefined;
+    return this.http
+      .get<Cart>(this.base, { params })
+      .pipe(tap((cart) => this._cart.set(cart)));
   }
 
   addItem(productId: number, quantity: string): Observable<Cart> {

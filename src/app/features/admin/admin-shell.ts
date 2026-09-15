@@ -21,6 +21,8 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
             Categories
           </a>
           <a routerLink="/admin/inventory" routerLinkActive="pf-admin__link--active">Inventory</a>
+          <a routerLink="/admin/coupons" routerLinkActive="pf-admin__link--active">Coupons</a>
+          <a routerLink="/admin/reviews" routerLinkActive="pf-admin__link--active">Reviews</a>
           <a routerLink="/admin/customers" routerLinkActive="pf-admin__link--active">Customers</a>
           <a routerLink="/admin/payments" routerLinkActive="pf-admin__link--active">Payments</a>
         </nav>

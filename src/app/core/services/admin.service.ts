@@ -5,9 +5,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AdminCategory,
+  AdminCoupon,
   AdminCustomer,
   AdminPayment,
   AdminProduct,
+  DiscountType,
   Inventory,
   LowStockItem,
   MessageResponse,
@@ -27,6 +29,22 @@ export interface CategoryPayload {
   description?: string | null;
   image_url?: string | null;
   display_order?: number;
+  is_active?: boolean;
+}
+
+export interface CouponPayload {
+  code: string;
+  description?: string | null;
+  discount_type: DiscountType;
+  /** Percent (1-100) or a rupee amount, per discount_type. A string, like all money. */
+  value: string;
+  max_discount_amount?: string | null;
+  minimum_order_value?: string;
+  /** 0 means unlimited, for both. */
+  usage_limit?: number;
+  per_customer_limit?: number;
+  valid_from?: string | null;
+  valid_until?: string | null;
   is_active?: boolean;
 }
 
@@ -174,6 +192,25 @@ export class AdminService {
       params = params.set('status', status);
     }
     return this.http.get<Page<AdminPayment>>(`${this.base}/payments`, { params });
+  }
+
+  // --------------------------------------------------------------- coupons
+  coupons(limit = 50, offset = 0): Observable<Page<AdminCoupon>> {
+    const params = new HttpParams().set('limit', limit).set('offset', offset);
+    return this.http.get<Page<AdminCoupon>>(`${this.base}/coupons`, { params });
+  }
+
+  createCoupon(payload: CouponPayload): Observable<AdminCoupon> {
+    return this.http.post<AdminCoupon>(`${this.base}/coupons`, payload);
+  }
+
+  /** The API refuses to change the terms of a coupon that has been redeemed. */
+  updateCoupon(id: number, payload: CouponPayload): Observable<AdminCoupon> {
+    return this.http.put<AdminCoupon>(`${this.base}/coupons/${id}`, payload);
+  }
+
+  deactivateCoupon(id: number): Observable<AdminCoupon> {
+    return this.http.delete<AdminCoupon>(`${this.base}/coupons/${id}`);
   }
 
   // --------------------------------------------------------------- reports

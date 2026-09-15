@@ -10,6 +10,7 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { QuantityPipe } from '../../shared/inr.pipe';
 import { ErrorStateComponent, LoadingComponent, StatusChipComponent } from '../../shared/ui';
+import { ProductReviewsComponent } from './product-reviews';
 
 @Component({
   selector: 'pf-product-detail',
@@ -21,6 +22,7 @@ import { ErrorStateComponent, LoadingComponent, StatusChipComponent } from '../.
     LoadingComponent,
     ErrorStateComponent,
     StatusChipComponent,
+    ProductReviewsComponent,
   ],
   templateUrl: './product-detail.page.html',
   styleUrl: './product-detail.page.scss',

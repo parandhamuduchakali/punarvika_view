@@ -44,6 +44,8 @@ export class CartPage implements OnInit {
 
   /** Local edit buffer, keyed by line id, so typing does not fight the server. */
   protected quantities: Record<number, string> = {};
+  /** What the customer typed. The applied code comes back from the server. */
+  protected couponInput = '';
 
   ngOnInit(): void {
     this.load();
@@ -53,7 +55,7 @@ export class CartPage implements OnInit {
     this.loading.set(true);
     this.failed.set(false);
 
-    this.cart.load().subscribe({
+    this.cart.load(this.couponInput.trim() || null).subscribe({
       next: (cart) => {
         this.syncQuantities(cart.items);
         this.loading.set(false);
@@ -135,8 +137,23 @@ export class CartPage implements OnInit {
     });
   }
 
+  protected applyCoupon(): void {
+    // Just a reload with the code attached: the server prices it and answers
+    // with either the applied code or the reason it does not apply.
+    this.load();
+  }
+
+  protected clearCoupon(): void {
+    this.couponInput = '';
+    this.load();
+  }
+
   protected checkout(): void {
-    void this.router.navigate(['/checkout']);
+    // The code travels to checkout, where it is validated and priced again.
+    const coupon = this.cart.couponCode();
+    void this.router.navigate(['/checkout'], {
+      queryParams: coupon ? { coupon } : {},
+    });
   }
 }
 

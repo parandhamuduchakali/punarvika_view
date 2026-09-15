@@ -110,6 +110,35 @@
         <aside class="pf-summary">
           <h2>Order summary</h2>
 
+          <!-- ------------------------------------------------- coupon -->
+          <div class="pf-coupon">
+            <label class="pf-label" for="coupon">Coupon code</label>
+            <div class="pf-coupon__row">
+              <input
+                id="coupon"
+                type="text"
+                class="pf-input"
+                [(ngModel)]="couponInput"
+                (keyup.enter)="applyCoupon()"
+                placeholder="e.g. WELCOME10"
+                autocapitalize="characters"
+              />
+              <button type="button" class="pf-button pf-button--ghost" (click)="applyCoupon()">
+                Apply
+              </button>
+            </div>
+            @if (cart.couponCode(); as applied) {
+              <p class="pf-coupon__applied">
+                <strong>{{ applied }}</strong> applied.
+                <button type="button" class="pf-link-button" (click)="clearCoupon()">
+                  Remove
+                </button>
+              </p>
+            } @else if (cart.couponError(); as reason) {
+              <span class="pf-error-text">{{ reason }}</span>
+            }
+          </div>
+
           <dl class="pf-summary__lines">
             <div>
               <dt>Subtotal</dt>
