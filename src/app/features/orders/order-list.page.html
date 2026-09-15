@@ -1,0 +1,69 @@
+<div class="pf-container pf-page">
+  <div class="pf-orders__head">
+    <h1>Your orders</h1>
+
+    <div class="pf-field pf-orders__filter">
+      <label class="pf-sr-only" for="status">Filter by status</label>
+      <select id="status" class="pf-select" [(ngModel)]="status" (change)="onFilterChange()">
+        @for (option of statuses; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <pf-loading label="Loading your orders" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your orders." (retry)="load()" />
+  } @else if (result(); as page) {
+    @if (page.items.length === 0) {
+      <pf-empty
+        icon="📦"
+        title="No orders yet"
+        message="When you order from the farm, it will appear here."
+      >
+        <a routerLink="/products" class="pf-button">Start shopping</a>
+      </pf-empty>
+    } @else {
+      <ul class="pf-order-list">
+        @for (order of page.items; track order.id) {
+          <li>
+            <a class="pf-order-card" [routerLink]="['/orders', order.id]">
+              <div class="pf-order-card__main">
+                <strong class="pf-order-card__number">{{ order.order_number }}</strong>
+                <span class="pf-muted pf-order-card__meta">
+                  {{ order.created_at | date: 'd MMM yyyy' }} ·
+                  {{ order.item_count }} {{ order.item_count === 1 ? 'item' : 'items' }}
+                </span>
+              </div>
+              <pf-status [status]="order.status" />
+              <span class="pf-price pf-order-card__total">{{ order.total_amount | inr }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+
+      @if (hasPrevious() || hasNext()) {
+        <nav class="pf-pager" aria-label="Pagination">
+          <button
+            type="button"
+            class="pf-button pf-button--ghost"
+            [disabled]="!hasPrevious()"
+            (click)="goToPage(page.offset - pageSize)"
+          >
+            &larr; Newer
+          </button>
+          <button
+            type="button"
+            class="pf-button pf-button--ghost"
+            [disabled]="!hasNext()"
+            (click)="goToPage(page.offset + pageSize)"
+          >
+            Older &rarr;
+          </button>
+        </nav>
+      }
+    }
+  }
+</div>

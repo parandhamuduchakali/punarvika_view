@@ -89,6 +89,32 @@ export const routes: Routes = [
     title: 'Payment failed — Punarvika Farms',
   },
 
+  // --------------------------------------------------- orders and account
+  {
+    path: 'orders',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/orders/order-list.page').then((m) => m.OrderListPage),
+    title: 'Your orders — Punarvika Farms',
+  },
+  {
+    path: 'orders/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/orders/order-detail.page').then((m) => m.OrderDetailPage),
+  },
+  {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile.page').then((m) => m.ProfilePage),
+    title: 'Your profile — Punarvika Farms',
+  },
+  {
+    path: 'addresses',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/addresses.page').then((m) => m.AddressesPage),
+    title: 'Delivery addresses — Punarvika Farms',
+  },
+
   {
     path: '**',
     loadComponent: () => import('./features/catalog/not-found.page').then((m) => m.NotFoundPage),

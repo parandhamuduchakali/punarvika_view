@@ -1,0 +1,137 @@
+/* Shared by the profile and addresses pages. */
+
+.pf-orders__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.pf-orders__head h1 {
+  margin: 0;
+}
+
+.pf-profile {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+.pf-profile h2 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.pf-profile__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.pf-profile__links a {
+  font-weight: 550;
+}
+
+/* --------------------------------------------------------------- the form */
+.pf-address-form {
+  margin-bottom: 1.5rem;
+}
+.pf-address-form h2 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.pf-form-row {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+.pf-form-row--three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.pf-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.pf-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pf-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pf-green);
+}
+.pf-check label {
+  font-size: 0.925rem;
+}
+
+/* ------------------------------------------------------------- the cards */
+.pf-address-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.pf-address-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pf-address__default {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--pf-green);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.pf-address-block {
+  font-style: normal;
+  font-size: 0.925rem;
+  line-height: 1.7;
+  flex: 1 1 auto;
+}
+
+.pf-address-card__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pf-border);
+}
+
+.pf-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--pf-green);
+  cursor: pointer;
+}
+.pf-link-button:hover {
+  text-decoration: underline;
+}
+.pf-link-button--danger {
+  color: var(--pf-danger);
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 640px) {
+  .pf-form-row,
+  .pf-form-row--three {
+    grid-template-columns: 1fr;
+  }
+}

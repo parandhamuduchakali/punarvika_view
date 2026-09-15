@@ -1,0 +1,217 @@
+<div class="pf-container pf-page">
+  @if (loading()) {
+    <pf-loading label="Loading your order" />
+  } @else if (failed()) {
+    <pf-error message="We could not find that order." [retryable]="false" />
+    <p style="text-align: center">
+      <a routerLink="/orders" class="pf-button pf-button--ghost">Back to your orders</a>
+    </p>
+  } @else if (order(); as order) {
+    <nav class="pf-breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/orders">Your orders</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ order.order_number }}</span>
+    </nav>
+
+    <div class="pf-order-head">
+      <div>
+        <h1>Order {{ order.order_number }}</h1>
+        <p class="pf-muted">
+          Placed {{ order.placed_at || order.created_at | date: 'd MMM yyyy, h:mm a' }}
+        </p>
+      </div>
+      <pf-status [status]="order.status" />
+    </div>
+
+    <!-- ------------------------------------------------------- timeline -->
+    @if (!isCancelled()) {
+      <ol class="pf-timeline">
+        @for (step of timeline; track step.status; let i = $index) {
+          <li
+            class="pf-timeline__step"
+            [class.pf-timeline__step--done]="i <= stepIndex()"
+            [class.pf-timeline__step--current]="i === stepIndex()"
+          >
+            <span class="pf-timeline__dot" aria-hidden="true"></span>
+            <span class="pf-timeline__label">{{ step.label }}</span>
+          </li>
+        }
+      </ol>
+    } @else {
+      <div class="pf-alert pf-alert--error">
+        This order was cancelled@if (order.cancellation_reason) {
+          : {{ order.cancellation_reason }}
+        }.
+      </div>
+    }
+
+    <!-- ----------------------------------------------------- pay / cancel -->
+    @if (canPay()) {
+      <section class="pf-card pf-order-pay">
+        <h2>Payment needed</h2>
+        <p class="pf-muted">
+          Your order is held for you. Pay by UPI or card to confirm it.
+        </p>
+
+        @if (!activePayment()) {
+          <div class="pf-order-pay__actions">
+            <button
+              type="button"
+              class="pf-button"
+              [disabled]="busy()"
+              (click)="retryPayment('UPI')"
+            >
+              Pay by UPI
+            </button>
+            <button
+              type="button"
+              class="pf-button pf-button--ghost"
+              [disabled]="busy()"
+              (click)="retryPayment('CARD')"
+            >
+              Pay by card
+            </button>
+          </div>
+        } @else if (isMockGateway) {
+          <div class="pf-alert pf-alert--info">
+            <strong>Development mode.</strong> No real gateway is configured, so payment is
+            simulated here.
+          </div>
+          <div class="pf-order-pay__actions">
+            <button
+              type="button"
+              class="pf-button"
+              [disabled]="busy()"
+              (click)="completeMockPayment('success')"
+            >
+              {{ busy() ? 'Processing…' : 'Simulate a successful payment' }}
+            </button>
+            <button
+              type="button"
+              class="pf-button pf-button--ghost"
+              [disabled]="busy()"
+              (click)="completeMockPayment('failed')"
+            >
+              Simulate a failed payment
+            </button>
+          </div>
+        } @else {
+          <p>Continue in the secure payment window to complete your order.</p>
+        }
+      </section>
+    }
+
+    <div class="pf-order-body">
+      <!-- ------------------------------------------------------- items -->
+      <section class="pf-card">
+        <h2>Items</h2>
+        <ul class="pf-order-items">
+          @for (item of order.items; track item.id) {
+            <li>
+              <span class="pf-order-items__name">
+                <a [routerLink]="['/products', item.product_id]">{{ item.product_name }}</a>
+                <span class="pf-muted">
+                  {{ item.unit_price | inr }} × {{ item.quantity | qty }}
+                  {{ item.unit.toLowerCase() }}
+                </span>
+              </span>
+              <span class="pf-price">{{ item.line_total | inr }}</span>
+            </li>
+          }
+        </ul>
+
+        <dl class="pf-summary__lines pf-order-totals">
+          <div>
+            <dt>Subtotal</dt>
+            <dd>{{ order.subtotal | inr }}</dd>
+          </div>
+          @if (order.discount_amount !== '0.00') {
+            <div>
+              <dt>Discount</dt>
+              <dd>−{{ order.discount_amount | inr }}</dd>
+            </div>
+          }
+          @if (order.tax_amount !== '0.00') {
+            <div>
+              <dt>Tax</dt>
+              <dd>{{ order.tax_amount | inr }}</dd>
+            </div>
+          }
+          <div>
+            <dt>Delivery</dt>
+            <dd>
+              @if (order.delivery_charge === '0.00') {
+                <span class="pf-free">Free</span>
+              } @else {
+                {{ order.delivery_charge | inr }}
+              }
+            </dd>
+          </div>
+          <div class="pf-order-totals__grand">
+            <dt>Total</dt>
+            <dd class="pf-price">{{ order.total_amount | inr }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ------------------------------------------------------- aside -->
+      <aside class="pf-order-aside">
+        <section class="pf-card">
+          <h2>Delivering to</h2>
+          <address class="pf-address-block">
+            <strong>{{ order.delivery_address.contact_name }}</strong><br />
+            {{ order.delivery_address.line1 }}<br />
+            @if (order.delivery_address.line2) {
+              {{ order.delivery_address.line2 }}<br />
+            }
+            @if (order.delivery_address.landmark) {
+              {{ order.delivery_address.landmark }}<br />
+            }
+            {{ order.delivery_address.city }}, {{ order.delivery_address.state }}
+            {{ order.delivery_address.pincode }}<br />
+            {{ order.delivery_address.contact_phone }}
+          </address>
+          @if (order.notes) {
+            <p class="pf-hint"><strong>Note:</strong> {{ order.notes }}</p>
+          }
+        </section>
+
+        @if (orderPayments().length > 0) {
+          <section class="pf-card">
+            <h2>Payments</h2>
+            <ul class="pf-payment-list">
+              @for (payment of orderPayments(); track payment.id) {
+                <li>
+                  <span>
+                    {{ payment.payment_method }} · {{ payment.amount | inr }}
+                    @if (payment.paid_at) {
+                      <span class="pf-muted">{{ payment.paid_at | date: 'd MMM, h:mm a' }}</span>
+                    }
+                  </span>
+                  <pf-status [status]="payment.status" />
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (order.can_cancel) {
+          <section class="pf-card">
+            <h2>Need to cancel?</h2>
+            <p class="pf-muted">
+              You can cancel until the farm starts preparing your order.
+            </p>
+            <button
+              type="button"
+              class="pf-button pf-button--danger pf-button--block"
+              [disabled]="cancelling()"
+              (click)="cancel()"
+            >
+              {{ cancelling() ? 'Cancelling…' : 'Cancel this order' }}
+            </button>
+          </section>
+        }
+      </aside>
+    </div>
+  }
+</div>

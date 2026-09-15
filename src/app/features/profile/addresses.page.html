@@ -1,0 +1,221 @@
+<div class="pf-container pf-page">
+  <div class="pf-orders__head">
+    <h1>Delivery addresses</h1>
+    @if (editingId() === null) {
+      <button type="button" class="pf-button" (click)="startAdd()">Add an address</button>
+    }
+  </div>
+
+  @if (loading()) {
+    <pf-loading label="Loading your addresses" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your addresses." (retry)="load()" />
+  } @else {
+    <!-- ------------------------------------------------------------ form -->
+    @if (editingId() !== null) {
+      <section class="pf-card pf-address-form">
+        <h2>{{ editingId() === 0 ? 'Add an address' : 'Edit address' }}</h2>
+
+        @if (formError()) {
+          <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+          <div class="pf-form-row">
+            <div class="pf-field">
+              <label class="pf-label" for="contact_name">Contact name</label>
+              <input
+                id="contact_name"
+                type="text"
+                class="pf-input"
+                [class.pf-invalid]="error('contact_name', 'Contact name')"
+                formControlName="contact_name"
+                autocomplete="name"
+              />
+              @if (error('contact_name', 'Contact name'); as message) {
+                <span class="pf-error-text">{{ message }}</span>
+              }
+            </div>
+
+            <div class="pf-field">
+              <label class="pf-label" for="contact_phone">Contact phone</label>
+              <input
+                id="contact_phone"
+                type="tel"
+                class="pf-input"
+                [class.pf-invalid]="error('contact_phone', 'Contact phone')"
+                formControlName="contact_phone"
+                autocomplete="tel"
+                inputmode="tel"
+                placeholder="9876543210"
+              />
+              @if (error('contact_phone', 'Contact phone'); as message) {
+                <span class="pf-error-text">{{ message }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="pf-field">
+            <label class="pf-label" for="line1">Address line 1</label>
+            <input
+              id="line1"
+              type="text"
+              class="pf-input"
+              [class.pf-invalid]="error('line1', 'Address')"
+              formControlName="line1"
+              autocomplete="address-line1"
+            />
+            @if (error('line1', 'Address'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            }
+          </div>
+
+          <div class="pf-form-row">
+            <div class="pf-field">
+              <label class="pf-label" for="line2">
+                Address line 2 <span class="pf-muted">(optional)</span>
+              </label>
+              <input
+                id="line2"
+                type="text"
+                class="pf-input"
+                formControlName="line2"
+                autocomplete="address-line2"
+              />
+            </div>
+
+            <div class="pf-field">
+              <label class="pf-label" for="landmark">
+                Landmark <span class="pf-muted">(optional)</span>
+              </label>
+              <input id="landmark" type="text" class="pf-input" formControlName="landmark" />
+            </div>
+          </div>
+
+          <div class="pf-form-row pf-form-row--three">
+            <div class="pf-field">
+              <label class="pf-label" for="city">City</label>
+              <input
+                id="city"
+                type="text"
+                class="pf-input"
+                [class.pf-invalid]="error('city', 'City')"
+                formControlName="city"
+                autocomplete="address-level2"
+              />
+              @if (error('city', 'City'); as message) {
+                <span class="pf-error-text">{{ message }}</span>
+              }
+            </div>
+
+            <div class="pf-field">
+              <label class="pf-label" for="state">State</label>
+              <input
+                id="state"
+                type="text"
+                class="pf-input"
+                [class.pf-invalid]="error('state', 'State')"
+                formControlName="state"
+                autocomplete="address-level1"
+              />
+              @if (error('state', 'State'); as message) {
+                <span class="pf-error-text">{{ message }}</span>
+              }
+            </div>
+
+            <div class="pf-field">
+              <label class="pf-label" for="pincode">PIN code</label>
+              <input
+                id="pincode"
+                type="text"
+                class="pf-input"
+                [class.pf-invalid]="error('pincode', 'PIN code')"
+                formControlName="pincode"
+                autocomplete="postal-code"
+                inputmode="numeric"
+                maxlength="6"
+              />
+              @if (error('pincode', 'PIN code'); as message) {
+                <span class="pf-error-text">{{ message }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="pf-field pf-check">
+            <input id="is_default" type="checkbox" formControlName="is_default" />
+            <label for="is_default">Use this as my default delivery address</label>
+          </div>
+
+          <div class="pf-form-actions">
+            <button type="submit" class="pf-button" [disabled]="saving()">
+              {{ saving() ? 'Saving…' : 'Save address' }}
+            </button>
+            <button
+              type="button"
+              class="pf-button pf-button--ghost"
+              [disabled]="saving()"
+              (click)="cancelEdit()"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+
+    <!-- ------------------------------------------------------------ list -->
+    @if (addresses().length === 0 && editingId() === null) {
+      <pf-empty
+        icon="🏠"
+        title="No saved addresses"
+        message="Add a delivery address so we know where to bring your order."
+      >
+        <button type="button" class="pf-button" (click)="startAdd()">Add an address</button>
+      </pf-empty>
+    } @else {
+      <div class="pf-address-grid">
+        @for (address of addresses(); track address.id) {
+          <article class="pf-card pf-address-card">
+            @if (address.is_default) {
+              <span class="pf-address__default">Default</span>
+            }
+            <address class="pf-address-block">
+              <strong>{{ address.contact_name }}</strong><br />
+              {{ address.line1 }}<br />
+              @if (address.line2) {
+                {{ address.line2 }}<br />
+              }
+              @if (address.landmark) {
+                {{ address.landmark }}<br />
+              }
+              {{ address.city }}, {{ address.state }} {{ address.pincode }}<br />
+              {{ address.contact_phone }}
+            </address>
+
+            <div class="pf-address-card__actions">
+              <button type="button" class="pf-link-button" (click)="startEdit(address)">
+                Edit
+              </button>
+              @if (!address.is_default) {
+                <button type="button" class="pf-link-button" (click)="makeDefault(address)">
+                  Make default
+                </button>
+              }
+              <button
+                type="button"
+                class="pf-link-button pf-link-button--danger"
+                (click)="remove(address)"
+              >
+                Remove
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <p class="pf-hint" style="margin-top: 1.5rem">
+      <a routerLink="/profile">&larr; Back to your profile</a>
+    </p>
+  }
+</div>

@@ -1,0 +1,140 @@
+<div class="pf-container pf-page">
+  <h1>Your profile</h1>
+
+  @if (loading()) {
+    <pf-loading label="Loading your profile" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your profile." (retry)="load()" />
+  } @else if (user(); as account) {
+    <div class="pf-profile">
+      <!-- ------------------------------------------------------- details -->
+      <section class="pf-card">
+        <h2>Your details</h2>
+
+        @if (profileError()) {
+          <div class="pf-alert pf-alert--error" role="alert">{{ profileError() }}</div>
+        }
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+          <div class="pf-field">
+            <label class="pf-label" for="full_name">Full name</label>
+            <input
+              id="full_name"
+              type="text"
+              class="pf-input"
+              [class.pf-invalid]="profileFieldError('full_name', 'Name')"
+              formControlName="full_name"
+              autocomplete="name"
+            />
+            @if (profileFieldError('full_name', 'Name'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            }
+          </div>
+
+          <div class="pf-field">
+            <label class="pf-label" for="phone">Mobile number</label>
+            <input
+              id="phone"
+              type="tel"
+              class="pf-input"
+              [class.pf-invalid]="profileFieldError('phone', 'Mobile number')"
+              formControlName="phone"
+              autocomplete="tel"
+              inputmode="tel"
+              placeholder="9876543210"
+            />
+            @if (profileFieldError('phone', 'Mobile number'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            }
+          </div>
+
+          <div class="pf-field">
+            <label class="pf-label" for="email">Email address</label>
+            <input id="email" type="email" class="pf-input" [value]="account.email" disabled />
+            <!-- Changing an email is an identity change and needs its own
+                 verification flow, so the API does not accept it here. -->
+            <span class="pf-hint">
+              Contact the farm if you need to change the email on your account.
+            </span>
+          </div>
+
+          <button type="submit" class="pf-button" [disabled]="savingProfile()">
+            {{ savingProfile() ? 'Saving…' : 'Save details' }}
+          </button>
+        </form>
+      </section>
+
+      <!-- ------------------------------------------------------ password -->
+      <section class="pf-card">
+        <h2>Change your password</h2>
+
+        @if (passwordError()) {
+          <div class="pf-alert pf-alert--error" role="alert">{{ passwordError() }}</div>
+        }
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+          <div class="pf-field">
+            <label class="pf-label" for="current_password">Current password</label>
+            <input
+              id="current_password"
+              type="password"
+              class="pf-input"
+              [class.pf-invalid]="passwordFieldError('current_password', 'Current password')"
+              formControlName="current_password"
+              autocomplete="current-password"
+            />
+            @if (passwordFieldError('current_password', 'Current password'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            }
+          </div>
+
+          <div class="pf-field">
+            <label class="pf-label" for="new_password">New password</label>
+            <input
+              id="new_password"
+              type="password"
+              class="pf-input"
+              [class.pf-invalid]="passwordFieldError('password', 'New password')"
+              formControlName="password"
+              autocomplete="new-password"
+            />
+            @if (passwordFieldError('password', 'New password'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            } @else {
+              <span class="pf-hint">At least 8 characters, with a letter and a number.</span>
+            }
+          </div>
+
+          <div class="pf-field">
+            <label class="pf-label" for="confirm_password">Confirm new password</label>
+            <input
+              id="confirm_password"
+              type="password"
+              class="pf-input"
+              [class.pf-invalid]="passwordFieldError('confirm_password', 'Confirmation')"
+              formControlName="confirm_password"
+              autocomplete="new-password"
+            />
+            @if (passwordFieldError('confirm_password', 'Confirmation'); as message) {
+              <span class="pf-error-text">{{ message }}</span>
+            }
+          </div>
+
+          <button type="submit" class="pf-button" [disabled]="savingPassword()">
+            {{ savingPassword() ? 'Changing…' : 'Change password' }}
+          </button>
+          <p class="pf-hint">
+            Changing your password signs you out on every device, including this one.
+          </p>
+        </form>
+      </section>
+
+      <!-- --------------------------------------------------------- links -->
+      <section class="pf-card pf-profile__links">
+        <h2>Quick links</h2>
+        <a routerLink="/addresses">Delivery addresses &rarr;</a>
+        <a routerLink="/orders">Your orders &rarr;</a>
+      </section>
+    </div>
+  }
+</div>
