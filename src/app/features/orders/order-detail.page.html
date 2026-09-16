@@ -127,8 +127,12 @@
           </div>
           @if (order.discount_amount !== '0.00') {
             <div>
-              <dt>Discount</dt>
-              <dd>−{{ order.discount_amount | inr }}</dd>
+              <dt>
+                Discount@if (order.coupon_code) {
+                  <span class="pf-muted"> ({{ order.coupon_code }})</span>
+                }
+              </dt>
+              <dd class="pf-discount">−{{ order.discount_amount | inr }}</dd>
             </div>
           }
           @if (order.tax_amount !== '0.00') {

@@ -109,6 +109,13 @@ export const routes: Routes = [
     title: 'Your profile — Punarvika Farms',
   },
   {
+    path: 'my-reviews',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile/my-reviews.page').then((m) => m.MyReviewsPage),
+    title: 'Your reviews — Punarvika Farms',
+  },
+  {
     path: 'addresses',
     canActivate: [authGuard],
     loadComponent: () => import('./features/profile/addresses.page').then((m) => m.AddressesPage),

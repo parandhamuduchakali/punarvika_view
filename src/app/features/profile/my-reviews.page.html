@@ -1,0 +1,111 @@
+<div class="pf-container pf-page">
+  <div class="pf-orders__head">
+    <h1>Your reviews</h1>
+  </div>
+
+  @if (loading()) {
+    <pf-loading label="Loading your reviews" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your reviews." (retry)="load()" />
+  } @else if (items().length === 0) {
+    <pf-empty
+      icon="💬"
+      title="You have not reviewed anything yet"
+      message="Once an order has been delivered you can review what you bought."
+    >
+      <a routerLink="/orders" class="pf-button">Your orders</a>
+    </pf-empty>
+  } @else {
+    <ul class="pf-my-reviews">
+      @for (review of items(); track review.id) {
+        <li class="pf-card pf-my-review">
+          @if (editingId() === review.id) {
+            <!-- ------------------------------------------------- editing -->
+            <h2 class="pf-my-review__product">{{ review.product_name }}</h2>
+
+            @if (formError()) {
+              <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+            }
+
+            <fieldset class="pf-field pf-rating-picker">
+              <legend class="pf-label">Rating</legend>
+              @for (star of stars; track star) {
+                <label class="pf-rating-picker__star">
+                  <input type="radio" name="rating-{{ review.id }}" [value]="star" [(ngModel)]="rating" />
+                  <span [class.pf-star--on]="star <= rating" aria-hidden="true">★</span>
+                  <span class="pf-sr-only">{{ star }} out of 5</span>
+                </label>
+              }
+            </fieldset>
+
+            <div class="pf-field">
+              <label class="pf-label" for="title-{{ review.id }}">Title</label>
+              <input id="title-{{ review.id }}" type="text" class="pf-input" [(ngModel)]="title" maxlength="150" />
+            </div>
+
+            <div class="pf-field">
+              <label class="pf-label" for="body-{{ review.id }}">Your thoughts</label>
+              <textarea id="body-{{ review.id }}" class="pf-textarea" [(ngModel)]="body" maxlength="2000"></textarea>
+            </div>
+
+            <div class="pf-form-actions">
+              <button type="button" class="pf-button" [disabled]="saving()" (click)="save()">
+                {{ saving() ? 'Saving…' : 'Save changes' }}
+              </button>
+              <button
+                type="button"
+                class="pf-button pf-button--ghost"
+                [disabled]="saving()"
+                (click)="cancel()"
+              >
+                Cancel
+              </button>
+            </div>
+            <p class="pf-hint">Edited reviews are checked by the farm again before they appear.</p>
+          } @else {
+            <!-- ------------------------------------------------- reading -->
+            <div class="pf-my-review__head">
+              <a class="pf-my-review__product" [routerLink]="['/products', review.product_id]">
+                {{ review.product_name }}
+              </a>
+              @if (review.is_approved) {
+                <span class="pf-badge-pill pf-badge-pill--live">Published</span>
+              } @else {
+                <span class="pf-badge-pill">Awaiting the farm</span>
+              }
+            </div>
+
+            <p class="pf-my-review__stars" [attr.aria-label]="review.rating + ' out of 5'">
+              @for (star of stars; track star) {
+                <span aria-hidden="true" [class.pf-star--on]="star <= review.rating">★</span>
+              }
+              <span class="pf-muted">{{ review.created_at | date: 'd MMM yyyy' }}</span>
+            </p>
+
+            @if (review.title) {
+              <h3 class="pf-my-review__title">{{ review.title }}</h3>
+            }
+            @if (review.body) {
+              <p class="pf-my-review__body">{{ review.body }}</p>
+            }
+
+            <div class="pf-my-review__actions">
+              <button type="button" class="pf-link-button" (click)="startEdit(review)">Edit</button>
+              <button
+                type="button"
+                class="pf-link-button pf-link-button--danger"
+                (click)="remove(review)"
+              >
+                Delete
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <p class="pf-hint" style="margin-top: 1.5rem">
+    <a routerLink="/profile">&larr; Back to your profile</a>
+  </p>
+</div>
