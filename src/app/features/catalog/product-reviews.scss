@@ -1,0 +1,109 @@
+.pf-reviews {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--pf-border);
+}
+
+.pf-reviews__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.pf-reviews__head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* ------------------------------------------------------------------ stars */
+.pf-star--on {
+  color: #d99b0b;
+}
+.pf-review__stars span,
+.pf-rating-picker__star span {
+  color: var(--pf-border);
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.pf-rating-picker {
+  border: none;
+  padding: 0;
+  margin-inline: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+.pf-rating-picker legend {
+  width: 100%;
+}
+.pf-rating-picker__star {
+  cursor: pointer;
+}
+.pf-rating-picker__star input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+/* The outline has to go on the star, since the input itself is hidden. */
+.pf-rating-picker__star input:focus-visible + span {
+  outline: 3px solid var(--pf-green);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.pf-rating-picker__star span {
+  font-size: 1.6rem;
+}
+
+/* ------------------------------------------------------------------- form */
+.pf-review-form {
+  margin-bottom: 1.75rem;
+}
+.pf-review-form h3 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+.pf-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------- list */
+.pf-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.pf-review {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.15rem;
+}
+.pf-review__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  margin-bottom: 0.4rem;
+}
+.pf-review__author {
+  font-weight: 650;
+}
+.pf-review__title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+.pf-review__body {
+  margin: 0;
+  color: var(--pf-muted);
+}

@@ -1,0 +1,109 @@
+<div class="pf-container pf-page">
+  <div class="pf-auth">
+    <h1>Create your account</h1>
+    <p class="pf-muted">Order milk, eggs and farm produce straight from Punarvika Farms.</p>
+
+    @if (formError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="pf-field">
+        <label class="pf-label" for="full_name">Full name</label>
+        <input
+          id="full_name"
+          type="text"
+          class="pf-input"
+          [class.pf-invalid]="error('full_name', 'Name')"
+          formControlName="full_name"
+          autocomplete="name"
+        />
+        @if (error('full_name', 'Name'); as message) {
+          <span class="pf-error-text">{{ message }}</span>
+        }
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          class="pf-input"
+          [class.pf-invalid]="error('email', 'Email')"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+        />
+        @if (error('email', 'Email'); as message) {
+          <span class="pf-error-text">{{ message }}</span>
+        }
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="phone">Mobile number <span class="pf-muted">(optional)</span></label>
+        <input
+          id="phone"
+          type="tel"
+          class="pf-input"
+          [class.pf-invalid]="error('phone', 'Mobile number')"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="9876543210"
+        />
+        @if (error('phone', 'Mobile number'); as message) {
+          <span class="pf-error-text">{{ message }}</span>
+        } @else {
+          <span class="pf-hint">We use this only to reach you about a delivery.</span>
+        }
+      </div>
+
+      <div class="pf-auth__row">
+        <div class="pf-field">
+          <label class="pf-label" for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            class="pf-input"
+            [class.pf-invalid]="error('password', 'Password')"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          @if (error('password', 'Password'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          }
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="confirm_password">Confirm password</label>
+          <input
+            id="confirm_password"
+            type="password"
+            class="pf-input"
+            [class.pf-invalid]="error('confirm_password', 'Confirmation')"
+            formControlName="confirm_password"
+            autocomplete="new-password"
+          />
+          @if (error('confirm_password', 'Confirmation'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          }
+        </div>
+      </div>
+
+      <span class="pf-hint">At least 8 characters, including a letter and a number.</span>
+
+      <button
+        type="submit"
+        class="pf-button pf-button--block"
+        style="margin-top: 1rem"
+        [disabled]="submitting()"
+      >
+        {{ submitting() ? 'Creating your account…' : 'Create account' }}
+      </button>
+    </form>
+
+    <div class="pf-auth__links">
+      <span class="pf-muted">Already have an account? <a routerLink="/login">Sign in</a></span>
+    </div>
+  </div>
+</div>

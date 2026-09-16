@@ -1,0 +1,193 @@
+<div class="pf-container pf-page">
+  <h1>Your basket</h1>
+
+  @if (loading()) {
+    <pf-loading label="Loading your basket" />
+  } @else if (failed()) {
+    <pf-error message="We could not load your basket." (retry)="load()" />
+  } @else if (cart.cart(); as basket) {
+    @if (basket.items.length === 0) {
+      <pf-empty
+        icon="🧺"
+        title="Your basket is empty"
+        message="Add some fresh milk, eggs or produce to get started."
+      >
+        <a routerLink="/products" class="pf-button">Browse the shop</a>
+      </pf-empty>
+    } @else {
+      @if (basket.has_issues) {
+        <div class="pf-alert pf-alert--error" role="alert">
+          Some items below cannot be ordered right now. They are not included in your total.
+        </div>
+      }
+      @if (lineError()) {
+        <div class="pf-alert pf-alert--error" role="alert">{{ lineError() }}</div>
+      }
+
+      <div class="pf-basket">
+        <!-- ------------------------------------------------------- lines -->
+        <section class="pf-basket__items">
+          @for (item of basket.items; track item.id) {
+            <article class="pf-line" [class.pf-line--issue]="item.issue">
+              <div class="pf-line__image">
+                @if (item.image_url) {
+                  <img [src]="item.image_url" [alt]="item.product_name" loading="lazy" />
+                } @else {
+                  <span aria-hidden="true">🌾</span>
+                }
+              </div>
+
+              <div class="pf-line__body">
+                <a class="pf-line__name" [routerLink]="['/products', item.product_id]">
+                  {{ item.product_name }}
+                </a>
+                <p class="pf-line__price pf-muted">
+                  {{ item.unit_price | inr }} / {{ item.unit.toLowerCase() }}
+                </p>
+
+                @if (item.issue) {
+                  <p class="pf-line__issue">{{ item.issue }}</p>
+                }
+
+                <div class="pf-line__controls">
+                  <div class="pf-qty__controls">
+                    <button
+                      type="button"
+                      class="pf-qty__btn"
+                      [disabled]="busyItem() === item.id"
+                      (click)="step(item, -1)"
+                      [attr.aria-label]="'Decrease quantity of ' + item.product_name"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="text"
+                      class="pf-input pf-qty__input"
+                      [(ngModel)]="quantities[item.id]"
+                      (blur)="updateQuantity(item)"
+                      [disabled]="busyItem() === item.id"
+                      inputmode="decimal"
+                      [attr.aria-label]="'Quantity of ' + item.product_name"
+                    />
+                    <button
+                      type="button"
+                      class="pf-qty__btn"
+                      [disabled]="busyItem() === item.id"
+                      (click)="step(item, 1)"
+                      [attr.aria-label]="'Increase quantity of ' + item.product_name"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="pf-line__remove"
+                    [disabled]="busyItem() === item.id"
+                    (click)="remove(item)"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <span class="pf-hint">
+                  Minimum {{ item.minimum_order_quantity | qty }}
+                  @if (item.maximum_order_quantity) {
+                    , maximum {{ item.maximum_order_quantity | qty }}
+                  }
+                </span>
+              </div>
+
+              <p class="pf-line__total pf-price">{{ item.line_total | inr }}</p>
+            </article>
+          }
+
+          <button type="button" class="pf-button pf-button--ghost" (click)="clear()">
+            Empty basket
+          </button>
+        </section>
+
+        <!-- ------------------------------------------------------ summary -->
+        <aside class="pf-summary">
+          <h2>Order summary</h2>
+
+          <!-- ------------------------------------------------- coupon -->
+          <div class="pf-coupon">
+            <label class="pf-label" for="coupon">Coupon code</label>
+            <div class="pf-coupon__row">
+              <input
+                id="coupon"
+                type="text"
+                class="pf-input"
+                [(ngModel)]="couponInput"
+                (keyup.enter)="applyCoupon()"
+                placeholder="e.g. WELCOME10"
+                autocapitalize="characters"
+              />
+              <button type="button" class="pf-button pf-button--ghost" (click)="applyCoupon()">
+                Apply
+              </button>
+            </div>
+            @if (cart.couponCode(); as applied) {
+              <p class="pf-coupon__applied">
+                <strong>{{ applied }}</strong> applied.
+                <button type="button" class="pf-link-button" (click)="clearCoupon()">
+                  Remove
+                </button>
+              </p>
+            } @else if (cart.couponError(); as reason) {
+              <span class="pf-error-text">{{ reason }}</span>
+            }
+          </div>
+
+          <dl class="pf-summary__lines">
+            <div>
+              <dt>Subtotal</dt>
+              <dd>{{ basket.pricing.subtotal | inr }}</dd>
+            </div>
+            @if (basket.pricing.discount_amount !== '0.00') {
+              <div>
+                <dt>Discount</dt>
+                <dd>−{{ basket.pricing.discount_amount | inr }}</dd>
+              </div>
+            }
+            @if (basket.pricing.tax_amount !== '0.00') {
+              <div>
+                <dt>Tax</dt>
+                <dd>{{ basket.pricing.tax_amount | inr }}</dd>
+              </div>
+            }
+            <div>
+              <dt>Delivery</dt>
+              <dd>
+                @if (basket.pricing.delivery_charge === '0.00') {
+                  <span class="pf-free">Free</span>
+                } @else {
+                  {{ basket.pricing.delivery_charge | inr }}
+                }
+              </dd>
+            </div>
+          </dl>
+
+          <div class="pf-summary__total">
+            <span>Total</span>
+            <span class="pf-price">{{ basket.pricing.total_amount | inr }}</span>
+          </div>
+
+          <button
+            type="button"
+            class="pf-button pf-button--block"
+            [disabled]="basket.pricing.total_amount === '0.00'"
+            (click)="checkout()"
+          >
+            Checkout
+          </button>
+
+          <p class="pf-hint pf-summary__note">
+            Prices are confirmed by the farm when you place the order. We accept UPI and
+            cards only.
+          </p>
+        </aside>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,233 @@
+/* Shared by the profile and addresses pages. */
+
+.pf-orders__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.pf-orders__head h1 {
+  margin: 0;
+}
+
+.pf-profile {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+.pf-profile h2 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.pf-profile__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.pf-profile__links a {
+  font-weight: 550;
+}
+
+/* --------------------------------------------------------------- the form */
+.pf-address-form {
+  margin-bottom: 1.5rem;
+}
+.pf-address-form h2 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.pf-form-row {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+.pf-form-row--three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.pf-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.pf-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pf-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pf-green);
+}
+.pf-check label {
+  font-size: 0.925rem;
+}
+
+/* ------------------------------------------------------------- the cards */
+.pf-address-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.pf-address-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pf-address__default {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--pf-green);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.pf-address-block {
+  font-style: normal;
+  font-size: 0.925rem;
+  line-height: 1.7;
+  flex: 1 1 auto;
+}
+
+.pf-address-card__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pf-border);
+}
+
+.pf-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--pf-green);
+  cursor: pointer;
+}
+.pf-link-button:hover {
+  text-decoration: underline;
+}
+.pf-link-button--danger {
+  color: var(--pf-danger);
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 640px) {
+  .pf-form-row,
+  .pf-form-row--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------------------------------- reviews */
+.pf-my-reviews {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.pf-my-review__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.pf-my-review__product {
+  font-weight: 650;
+  color: inherit;
+  font-size: 1rem;
+  margin: 0;
+}
+.pf-badge-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--pf-surface-2);
+  color: var(--pf-muted);
+  white-space: nowrap;
+}
+.pf-badge-pill--live {
+  background: var(--pf-success-bg);
+  color: var(--pf-success);
+}
+.pf-my-review__stars {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+.pf-my-review__stars span {
+  color: var(--pf-border);
+}
+.pf-star--on {
+  color: #d99b0b;
+}
+.pf-my-review__title {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+.pf-my-review__body {
+  margin: 0 0 1rem;
+  color: var(--pf-muted);
+}
+.pf-my-review__actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pf-border);
+}
+
+.pf-rating-picker {
+  border: none;
+  padding: 0;
+  margin-inline: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+.pf-rating-picker legend {
+  width: 100%;
+}
+.pf-rating-picker__star {
+  cursor: pointer;
+}
+.pf-rating-picker__star input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.pf-rating-picker__star input:focus-visible + span {
+  outline: 3px solid var(--pf-green);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.pf-rating-picker__star span {
+  font-size: 1.6rem;
+  color: var(--pf-border);
+}

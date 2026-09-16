@@ -1,0 +1,58 @@
+<div class="pf-container pf-page">
+  <div class="pf-auth">
+    <h1>Welcome back</h1>
+    <p class="pf-muted">Sign in to order fresh from Punarvika Farms.</p>
+
+    @if (formError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="pf-field">
+        <label class="pf-label" for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          class="pf-input"
+          [class.pf-invalid]="error('email', 'Email')"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="!!error('email', 'Email')"
+          [attr.aria-describedby]="error('email', 'Email') ? 'email-error' : null"
+        />
+        @if (error('email', 'Email'); as message) {
+          <span class="pf-error-text" id="email-error">{{ message }}</span>
+        }
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="pf-input"
+          [class.pf-invalid]="error('password', 'Password')"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="!!error('password', 'Password')"
+          [attr.aria-describedby]="error('password', 'Password') ? 'password-error' : null"
+        />
+        @if (error('password', 'Password'); as message) {
+          <span class="pf-error-text" id="password-error">{{ message }}</span>
+        }
+      </div>
+
+      <button type="submit" class="pf-button pf-button--block" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <div class="pf-auth__links">
+      <a routerLink="/forgot-password">Forgotten your password?</a>
+      <span class="pf-muted">
+        New here? <a routerLink="/register">Create an account</a>
+      </span>
+    </div>
+  </div>
+</div>

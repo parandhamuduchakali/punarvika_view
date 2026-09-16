@@ -1,0 +1,110 @@
+<div class="pf-admin-head">
+  <h2>Audit log</h2>
+
+  <div class="pf-audit-filters">
+    <div class="pf-field" style="margin: 0; min-width: 11rem">
+      <label class="pf-sr-only" for="entity_type">Filter by type</label>
+      <select
+        id="entity_type"
+        class="pf-select"
+        [(ngModel)]="entityType"
+        (change)="onFilterChange()"
+      >
+        @for (type of entityTypes; track type) {
+          <option [value]="type">{{ type || 'Everything' }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="pf-field" style="margin: 0; min-width: 11rem">
+      <label class="pf-sr-only" for="action">Filter by action</label>
+      <input
+        id="action"
+        type="search"
+        class="pf-input"
+        [(ngModel)]="action"
+        (keyup.enter)="onFilterChange()"
+        placeholder="Action, e.g. captured"
+      />
+    </div>
+  </div>
+</div>
+
+<p class="pf-hint" style="margin-bottom: 1rem">
+  Read-only. Entries cannot be edited or deleted, here or through the API — a trail that
+  can be rewritten proves nothing.
+</p>
+
+@if (loading()) {
+  <pf-loading label="Loading the audit log" />
+} @else if (failed()) {
+  <pf-error message="We could not load the audit log." (retry)="load()" />
+} @else if (result(); as page) {
+  @if (page.items.length === 0) {
+    <pf-empty icon="📋" title="Nothing recorded yet" message="Actions will appear here." />
+  } @else {
+    <section class="pf-admin-table">
+      <div class="pf-table-wrap">
+        <table class="pf-table">
+          <caption class="pf-sr-only">Recorded actions, newest first</caption>
+          <thead>
+            <tr>
+              <th scope="col">When</th>
+              <th scope="col">What</th>
+              <th scope="col">Action</th>
+              <th scope="col">By</th>
+              <th scope="col">Before</th>
+              <th scope="col">After</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of page.items; track entry.id) {
+              <tr>
+                <td class="pf-audit-when">
+                  {{ entry.created_at | date: 'd MMM yyyy' }}<br />
+                  <span class="pf-muted">{{ entry.created_at | date: 'HH:mm:ss' }}</span>
+                </td>
+                <td>
+                  <strong>{{ entry.entity_type }}</strong>
+                  <br /><span class="pf-muted">#{{ entry.entity_id }}</span>
+                </td>
+                <td>{{ label(entry.action) }}</td>
+                <td>
+                  @if (entry.user_id) {
+                    #{{ entry.user_id }}
+                  } @else {
+                    <!-- The FK is ON DELETE SET NULL, so the trail outlives the account. -->
+                    <span class="pf-muted">deleted account</span>
+                  }
+                </td>
+                <td class="pf-audit-values">{{ summarise(entry.old_values) }}</td>
+                <td class="pf-audit-values">{{ summarise(entry.new_values) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    @if (hasPrevious() || hasNext()) {
+      <nav class="pf-pager" aria-label="Pagination">
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="!hasPrevious()"
+          (click)="goToPage(page.offset - pageSize)"
+        >
+          &larr; Newer
+        </button>
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="!hasNext()"
+          (click)="goToPage(page.offset + pageSize)"
+        >
+          Older &rarr;
+        </button>
+      </nav>
+    }
+  }
+}

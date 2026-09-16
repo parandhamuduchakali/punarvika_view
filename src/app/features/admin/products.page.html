@@ -1,0 +1,309 @@
+<div class="pf-admin-head">
+  <h2>Products</h2>
+  @if (editingId() === null) {
+    <button type="button" class="pf-button" (click)="startCreate()">Add a product</button>
+  }
+</div>
+
+@if (editingId() !== null) {
+  <section class="pf-admin-form">
+    <h3>{{ editingId() === 0 ? 'Add a product' : 'Edit product' }}</h3>
+
+    @if (formError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="pf-form-row">
+        <div class="pf-field">
+          <label class="pf-label" for="name">Name</label>
+          <input
+            id="name"
+            type="text"
+            class="pf-input"
+            [class.pf-invalid]="error('name', 'Name')"
+            formControlName="name"
+          />
+          @if (error('name', 'Name'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          }
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="category_id">Category</label>
+          <select
+            id="category_id"
+            class="pf-select"
+            [class.pf-invalid]="error('category_id', 'Category')"
+            formControlName="category_id"
+          >
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+          @if (error('category_id', 'Category'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="pf-form-row--three pf-form-row">
+        <div class="pf-field">
+          <label class="pf-label" for="price">Price (₹)</label>
+          <input
+            id="price"
+            type="text"
+            class="pf-input"
+            [class.pf-invalid]="error('price', 'Price')"
+            formControlName="price"
+            inputmode="decimal"
+            placeholder="70.00"
+          />
+          @if (error('price', 'Price'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          }
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="unit">Sold by</label>
+          <select id="unit" class="pf-select" formControlName="unit">
+            @for (unit of units; track unit) {
+              <option [value]="unit">{{ unit.toLowerCase() }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="image_url">Image URL</label>
+          <input id="image_url" type="url" class="pf-input" formControlName="image_url" />
+        </div>
+      </div>
+
+      <div class="pf-form-row">
+        <div class="pf-field">
+          <label class="pf-label" for="minimum_order_quantity">Minimum order</label>
+          <input
+            id="minimum_order_quantity"
+            type="text"
+            class="pf-input"
+            formControlName="minimum_order_quantity"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="maximum_order_quantity">
+            Maximum order <span class="pf-muted">(optional)</span>
+          </label>
+          <input
+            id="maximum_order_quantity"
+            type="text"
+            class="pf-input"
+            formControlName="maximum_order_quantity"
+            inputmode="decimal"
+          />
+        </div>
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="short_description">Short description</label>
+        <input
+          id="short_description"
+          type="text"
+          class="pf-input"
+          formControlName="short_description"
+          maxlength="300"
+        />
+      </div>
+
+      <div class="pf-field">
+        <label class="pf-label" for="description">Full description</label>
+        <textarea
+          id="description"
+          class="pf-textarea"
+          formControlName="description"
+          maxlength="5000"
+        ></textarea>
+      </div>
+
+      <div class="pf-form-row">
+        <div class="pf-field pf-check">
+          <input id="is_available" type="checkbox" formControlName="is_available" />
+          <label for="is_available">Available to order now</label>
+        </div>
+        <div class="pf-field pf-check">
+          <input id="is_active" type="checkbox" formControlName="is_active" />
+          <label for="is_active">Listed in the shop</label>
+        </div>
+      </div>
+
+      <div class="pf-form-actions">
+        <button type="submit" class="pf-button" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save product' }}
+        </button>
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="saving()"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </section>
+}
+
+@if (imagesFor(); as product) {
+  <section class="pf-admin-form">
+    <div class="pf-admin-head">
+      <h3>Images — {{ product.name }}</h3>
+      <button type="button" class="pf-link-button" (click)="closeImages()">Close</button>
+    </div>
+
+    @if (imageError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ imageError() }}</div>
+    }
+
+    <div class="pf-form-row">
+      <div class="pf-field">
+        <label class="pf-label" for="image_url">Image URL</label>
+        <input
+          id="image_url"
+          type="url"
+          class="pf-input"
+          [(ngModel)]="newImageUrl"
+          placeholder="https://…"
+        />
+      </div>
+      <div class="pf-field">
+        <label class="pf-label" for="image_alt">Description for screen readers</label>
+        <input id="image_alt" type="text" class="pf-input" [(ngModel)]="newImageAlt" />
+      </div>
+    </div>
+    <div class="pf-form-actions">
+      <button type="button" class="pf-button" (click)="addImage()">Add image</button>
+    </div>
+
+    @if (images().length === 0) {
+      <p class="pf-muted" style="margin-top: 1rem">
+        No images yet. The product page falls back to a placeholder.
+      </p>
+    } @else {
+      <div class="pf-image-grid">
+        @for (image of images(); track image.id) {
+          <figure class="pf-image-card">
+            <img [src]="image.image_url" [alt]="image.alt_text || product.name" />
+            <figcaption>
+              @if (image.is_primary) {
+                <span class="pf-badge-main">Main</span>
+              } @else {
+                <button type="button" class="pf-link-button" (click)="makePrimary(image)">
+                  Make main
+                </button>
+              }
+              <button
+                type="button"
+                class="pf-link-button pf-link-button--danger"
+                (click)="removeImage(image)"
+              >
+                Remove
+              </button>
+            </figcaption>
+          </figure>
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (loading()) {
+  <pf-loading label="Loading products" />
+} @else if (failed()) {
+  <pf-error message="We could not load the products." (retry)="load()" />
+} @else if (result(); as page) {
+  <section class="pf-admin-table">
+    <div class="pf-table-wrap">
+      <table class="pf-table">
+        <caption class="pf-sr-only">All products, including withdrawn ones</caption>
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Category</th>
+            <th scope="col" class="pf-numeric">Price</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of page.items; track product.id) {
+            <tr [class.pf-inactive]="!product.is_active">
+              <td>
+                <strong>{{ product.name }}</strong><br />
+                <span class="pf-muted">{{ product.sku }}</span>
+              </td>
+              <td>{{ categoryName(product.category_id) }}</td>
+              <td class="pf-numeric">
+                {{ product.price | inr }}<br />
+                <span class="pf-muted">/ {{ product.unit.toLowerCase() }}</span>
+              </td>
+              <td>
+                @if (!product.is_active) {
+                  <span class="pf-muted">Withdrawn</span>
+                } @else if (!product.is_available) {
+                  <span class="pf-muted">Paused</span>
+                } @else {
+                  <span>On sale</span>
+                }
+              </td>
+              <td>
+                <div class="pf-row-actions">
+                  <button type="button" class="pf-link-button" (click)="startEdit(product)">
+                    Edit
+                  </button>
+                  <button type="button" class="pf-link-button" (click)="openImages(product)">
+                    Images
+                  </button>
+                  @if (product.is_active) {
+                    <button
+                      type="button"
+                      class="pf-link-button pf-link-button--danger"
+                      (click)="withdraw(product)"
+                    >
+                      Withdraw
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="pf-muted">No products yet.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (hasPrevious() || hasNext()) {
+    <nav class="pf-pager" aria-label="Pagination">
+      <button
+        type="button"
+        class="pf-button pf-button--ghost"
+        [disabled]="!hasPrevious()"
+        (click)="goToPage(page.offset - pageSize)"
+      >
+        &larr; Previous
+      </button>
+      <button
+        type="button"
+        class="pf-button pf-button--ghost"
+        [disabled]="!hasNext()"
+        (click)="goToPage(page.offset + pageSize)"
+      >
+        Next &rarr;
+      </button>
+    </nav>
+  }
+}

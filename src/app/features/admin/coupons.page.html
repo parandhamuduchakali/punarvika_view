@@ -1,0 +1,227 @@
+<div class="pf-admin-head">
+  <h2>Coupons</h2>
+  @if (editingId() === null) {
+    <button type="button" class="pf-button" (click)="startCreate()">Add a coupon</button>
+  }
+</div>
+
+@if (editingId() !== null) {
+  <section class="pf-admin-form">
+    <h3>{{ editingId() === 0 ? 'Add a coupon' : 'Edit coupon' }}</h3>
+
+    @if (formError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ formError() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="pf-form-row">
+        <div class="pf-field">
+          <label class="pf-label" for="code">Code</label>
+          <input
+            id="code"
+            type="text"
+            class="pf-input"
+            [class.pf-invalid]="error('code', 'Code')"
+            formControlName="code"
+            placeholder="WELCOME10"
+          />
+          @if (error('code', 'Code'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          } @else {
+            <span class="pf-hint">Letters, numbers, hyphens and underscores.</span>
+          }
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="description">Description</label>
+          <input id="description" type="text" class="pf-input" formControlName="description" />
+        </div>
+      </div>
+
+      <div class="pf-form-row pf-form-row--three">
+        <div class="pf-field">
+          <label class="pf-label" for="discount_type">Type</label>
+          <select id="discount_type" class="pf-select" formControlName="discount_type">
+            <option value="PERCENT">Percentage off</option>
+            <option value="FLAT">Flat amount off</option>
+          </select>
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="value">Value</label>
+          <input
+            id="value"
+            type="text"
+            class="pf-input"
+            [class.pf-invalid]="error('value', 'Value')"
+            formControlName="value"
+            inputmode="decimal"
+          />
+          @if (error('value', 'Value'); as message) {
+            <span class="pf-error-text">{{ message }}</span>
+          } @else {
+            <span class="pf-hint">
+              {{ form.value.discount_type === 'PERCENT' ? 'Percent, 1 to 100' : 'Rupees' }}
+            </span>
+          }
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="max_discount_amount">Cap (₹)</label>
+          <input
+            id="max_discount_amount"
+            type="text"
+            class="pf-input"
+            formControlName="max_discount_amount"
+            inputmode="decimal"
+          />
+          <span class="pf-hint">Optional. Caps a percentage coupon.</span>
+        </div>
+      </div>
+
+      <div class="pf-form-row pf-form-row--three">
+        <div class="pf-field">
+          <label class="pf-label" for="minimum_order_value">Minimum basket (₹)</label>
+          <input
+            id="minimum_order_value"
+            type="text"
+            class="pf-input"
+            formControlName="minimum_order_value"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="usage_limit">Total uses</label>
+          <input
+            id="usage_limit"
+            type="number"
+            class="pf-input"
+            formControlName="usage_limit"
+            min="0"
+          />
+          <span class="pf-hint">0 means unlimited.</span>
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="per_customer_limit">Uses per customer</label>
+          <input
+            id="per_customer_limit"
+            type="number"
+            class="pf-input"
+            formControlName="per_customer_limit"
+            min="0"
+          />
+          <span class="pf-hint">0 means unlimited.</span>
+        </div>
+      </div>
+
+      <div class="pf-form-row">
+        <div class="pf-field">
+          <label class="pf-label" for="valid_until">Valid until</label>
+          <input id="valid_until" type="date" class="pf-input" formControlName="valid_until" />
+        </div>
+        <div class="pf-field pf-check" style="align-self: end; padding-bottom: 1rem">
+          <input id="is_active" type="checkbox" formControlName="is_active" />
+          <label for="is_active">Active</label>
+        </div>
+      </div>
+
+      <div class="pf-form-actions">
+        <button type="submit" class="pf-button" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save coupon' }}
+        </button>
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="saving()"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <p class="pf-hint">
+        Once a coupon has been used its discount terms are locked, so past orders keep the
+        deal they were given. Deactivate it and make a new one instead.
+      </p>
+    </form>
+  </section>
+}
+
+@if (loading()) {
+  <pf-loading label="Loading coupons" />
+} @else if (failed()) {
+  <pf-error message="We could not load the coupons." (retry)="load()" />
+} @else if (result(); as page) {
+  <section class="pf-admin-table">
+    <div class="pf-table-wrap">
+      <table class="pf-table">
+        <caption class="pf-sr-only">All coupons</caption>
+        <thead>
+          <tr>
+            <th scope="col">Code</th>
+            <th scope="col">Discount</th>
+            <th scope="col" class="pf-numeric">Minimum</th>
+            <th scope="col" class="pf-numeric">Used</th>
+            <th scope="col">Valid until</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (coupon of page.items; track coupon.id) {
+            <tr [class.pf-inactive]="!coupon.is_active">
+              <td>
+                <strong>{{ coupon.code }}</strong>
+                @if (coupon.description) {
+                  <br /><span class="pf-muted">{{ coupon.description }}</span>
+                }
+              </td>
+              <td>
+                @if (coupon.discount_type === 'PERCENT') {
+                  {{ coupon.value }}%
+                  @if (coupon.max_discount_amount) {
+                    <span class="pf-muted">up to {{ coupon.max_discount_amount | inr }}</span>
+                  }
+                } @else {
+                  {{ coupon.value | inr }}
+                }
+              </td>
+              <td class="pf-numeric">{{ coupon.minimum_order_value | inr }}</td>
+              <td class="pf-numeric">
+                {{ coupon.times_redeemed }}@if (coupon.usage_limit > 0) {
+                  / {{ coupon.usage_limit }}
+                }
+              </td>
+              <td>
+                {{ coupon.valid_until ? (coupon.valid_until | date: 'd MMM yyyy') : '—' }}
+              </td>
+              <td>{{ coupon.is_active ? 'Active' : 'Inactive' }}</td>
+              <td>
+                <div class="pf-row-actions">
+                  <button type="button" class="pf-link-button" (click)="startEdit(coupon)">
+                    Edit
+                  </button>
+                  @if (coupon.is_active) {
+                    <button
+                      type="button"
+                      class="pf-link-button pf-link-button--danger"
+                      (click)="deactivate(coupon)"
+                    >
+                      Deactivate
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="pf-muted">No coupons yet.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

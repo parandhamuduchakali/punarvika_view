@@ -9,7 +9,10 @@
 
 # Node modules and dependency files
 /node_modules/
-/package-lock.json
+# package-lock.json is deliberately NOT ignored: without it `npm install` can
+# resolve different transitive versions than were tested, so a build that works
+# here is not the build that ships. yarn.lock stays ignored because this project
+# uses npm.
 /yarn.lock
 
 # Environment files

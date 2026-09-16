@@ -1,0 +1,203 @@
+.pf-checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.pf-checkout__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pf-checkout__section h2 {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.pf-checkout__hint {
+  font-size: 0.9rem;
+  margin: -0.35rem 0 0.9rem;
+}
+
+.pf-checkout__link {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+}
+
+/* -------------------------------------------------------------- addresses */
+.pf-addresses {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pf-address,
+.pf-method {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.9rem;
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pf-address--selected,
+.pf-method--selected {
+  border-color: var(--pf-green);
+  background: var(--pf-green-light);
+}
+.pf-address input,
+.pf-method input {
+  margin-top: 0.25rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pf-green);
+  flex: 0 0 auto;
+}
+
+.pf-address__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.925rem;
+  min-width: 0;
+}
+.pf-address__default {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--pf-green);
+  color: #fff;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------- methods */
+.pf-methods {
+  display: grid;
+  gap: 0.75rem;
+}
+.pf-method > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.925rem;
+}
+
+/* ---------------------------------------------------------------- summary */
+.pf-summary {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 1.25rem;
+  position: sticky;
+  top: 88px;
+}
+.pf-summary h2 {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.pf-summary__items {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px solid var(--pf-border);
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+.pf-summary__items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.pf-summary__item-name {
+  min-width: 0;
+}
+
+.pf-summary__lines {
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.925rem;
+}
+.pf-summary__lines > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.pf-summary__lines dt {
+  color: var(--pf-muted);
+}
+.pf-summary__lines dd {
+  margin: 0;
+  font-weight: 550;
+}
+
+.pf-free {
+  color: var(--pf-success);
+  font-weight: 650;
+}
+
+.pf-summary__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  margin-bottom: 1rem;
+  border-top: 2px solid var(--pf-border);
+  font-weight: 650;
+}
+.pf-summary__total .pf-price {
+  font-size: 1.3rem;
+  color: var(--pf-green-dark);
+}
+
+.pf-summary__note {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* -------------------------------------------------------------- pay step */
+.pf-pay {
+  display: flex;
+  justify-content: center;
+}
+.pf-pay__card {
+  max-width: 34rem;
+  width: 100%;
+  text-align: center;
+}
+.pf-pay__amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--pf-green-dark);
+  margin: 0.5rem 0;
+}
+.pf-pay__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 1.25rem 0 1rem;
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 900px) {
+  .pf-checkout {
+    grid-template-columns: 1fr;
+  }
+  .pf-summary {
+    position: static;
+  }
+}
+
+.pf-discount {
+  color: var(--pf-success);
+}
