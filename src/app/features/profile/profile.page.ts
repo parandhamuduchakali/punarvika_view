@@ -34,6 +34,7 @@ export class ProfilePage implements OnInit {
   protected readonly failed = signal(false);
   protected readonly savingProfile = signal(false);
   protected readonly savingPassword = signal(false);
+  protected readonly signingOutEverywhere = signal(false);
   protected readonly profileError = signal<string | null>(null);
   protected readonly passwordError = signal<string | null>(null);
 
@@ -103,6 +104,27 @@ export class ProfilePage implements OnInit {
         } else {
           this.profileError.set('Could not save your details.');
         }
+      },
+    });
+  }
+
+  /**
+   * For a customer who thinks someone else has their password: it kills every
+   * refresh token, so any other browser is signed out at its next refresh.
+   */
+  protected signOutEverywhere(): void {
+    this.signingOutEverywhere.set(true);
+
+    this.auth.logoutEverywhere().subscribe({
+      next: (response) => {
+        this.signingOutEverywhere.set(false);
+        this.auth.clearSession();
+        this.notifications.success(response.message);
+        void this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.signingOutEverywhere.set(false);
+        this.notifications.error('Could not sign you out everywhere.');
       },
     });
   }

@@ -100,8 +100,28 @@ payment id and signature for `/payments/verify`.
 
 Gateway secrets never reach the browser — only the gateway's public key id does.
 
-## Note on `package-lock.json`
+## Features
 
-The repository's `.gitignore` excludes it. That is the existing project choice
-and has been left alone, but it does mean builds are not reproducible across
-machines; committing the lockfile would fix that.
+Browse and search the catalogue, basket with live server-side pricing, coupons,
+checkout with UPI or card, order history with a fulfilment timeline, profile and
+address book, verified-purchase product reviews, and a farm admin area covering
+products, categories, inventory, orders, coupons, review moderation, customers,
+payments and a sales report.
+
+## Tests
+
+79 tests, weighted towards the parts where a bug is expensive rather than
+towards line count:
+
+- **`auth.interceptor`** — that several simultaneous 401s trigger exactly *one*
+  refresh. The backend rotates refresh tokens and treats a replay as theft, so
+  getting this wrong revokes the customer's session. Also that a failed refresh
+  does not wedge every later request behind one that never comes.
+- **`error.interceptor`** — the `AppApiError` contract every component relies on,
+  including a non-envelope body from a proxy.
+- **`auth.guard`** — admin, customer and visitor paths, and that access stops the
+  moment the session is cleared.
+- **`InrPipe`** — Indian 2,2,3 digit grouping, and that no value round-trips
+  through `number`.
+- **`CartService`** — that state comes wholly from the API and that no
+  price-shaped field is ever sent.

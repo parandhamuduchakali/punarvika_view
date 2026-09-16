@@ -62,6 +62,17 @@ export class AuthService {
       .pipe(tap(() => this.clearSession()));
   }
 
+  /**
+   * Ends every session, on every device. The access token already issued to this
+   * browser stays valid until it expires (a JWT cannot be revoked), which is why
+   * it is short-lived; the refresh tokens are what actually die here.
+   */
+  logoutEverywhere(): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.base}/logout-all`, {}, {
+      withCredentials: true,
+    });
+  }
+
   forgotPassword(email: string): Observable<MessageResponse> {
     return this.http.post<MessageResponse>(`${this.base}/forgot-password`, { email });
   }

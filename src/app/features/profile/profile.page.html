@@ -129,6 +129,23 @@
         </form>
       </section>
 
+      <!-- ------------------------------------------------------ security -->
+      <section class="pf-card">
+        <h2>Signed in elsewhere?</h2>
+        <p class="pf-muted">
+          If you think someone else has your password, sign out everywhere and then change
+          it. Any other browser is signed out the next time it checks in.
+        </p>
+        <button
+          type="button"
+          class="pf-button pf-button--ghost"
+          [disabled]="signingOutEverywhere()"
+          (click)="signOutEverywhere()"
+        >
+          {{ signingOutEverywhere() ? 'Signing out…' : 'Sign out on all devices' }}
+        </button>
+      </section>
+
       <!-- --------------------------------------------------------- links -->
       <section class="pf-card pf-profile__links">
         <h2>Quick links</h2>
