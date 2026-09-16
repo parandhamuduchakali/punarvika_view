@@ -61,6 +61,11 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./payments.page').then((m) => m.AdminPaymentsPage),
         title: 'Payments — Farm admin',
       },
+      {
+        path: 'audit-log',
+        loadComponent: () => import('./audit-log.page').then((m) => m.AdminAuditLogPage),
+        title: 'Audit log — Farm admin',
+      },
       { path: '**', redirectTo: '' },
     ],
   },

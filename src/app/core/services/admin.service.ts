@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import {
   AdminCategory,
   AdminCoupon,
+  AdminProductImage,
   AdminCustomer,
   AdminPayment,
   AdminProduct,
@@ -18,6 +19,8 @@ import {
   OrderSummary,
   Page,
   PaymentStatus,
+  AuditEntry,
+  ProductImagePayload,
   ProductUnit,
   SalesReport,
 } from '../models/api.models';
@@ -115,6 +118,50 @@ export class AdminService {
 
   withdrawProduct(id: number): Observable<MessageResponse> {
     return this.http.delete<MessageResponse>(`${this.base}/products/${id}`);
+  }
+
+  // -------------------------------------------------------- product images
+  productImages(productId: number): Observable<AdminProductImage[]> {
+    return this.http.get<AdminProductImage[]>(`${this.base}/products/${productId}/images`);
+  }
+
+  addProductImage(
+    productId: number,
+    payload: ProductImagePayload,
+  ): Observable<AdminProductImage> {
+    return this.http.post<AdminProductImage>(
+      `${this.base}/products/${productId}/images`,
+      payload,
+    );
+  }
+
+  setPrimaryImage(productId: number, imageId: number): Observable<AdminProductImage> {
+    return this.http.post<AdminProductImage>(
+      `${this.base}/products/${productId}/images/${imageId}/primary`,
+      {},
+    );
+  }
+
+  deleteProductImage(productId: number, imageId: number): Observable<MessageResponse> {
+    return this.http.delete<MessageResponse>(
+      `${this.base}/products/${productId}/images/${imageId}`,
+    );
+  }
+
+  // ------------------------------------------------------------- audit log
+  /** Read-only. There is deliberately no endpoint that edits or deletes an entry. */
+  auditLog(
+    filters: { entity_type?: string; entity_id?: string; action?: string } = {},
+    limit = 50,
+    offset = 0,
+  ): Observable<Page<AuditEntry>> {
+    let params = new HttpParams().set('limit', limit).set('offset', offset);
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) {
+        params = params.set(key, value);
+      }
+    }
+    return this.http.get<Page<AuditEntry>>(`${this.base}/audit-log`, { params });
   }
 
   // ------------------------------------------------------------- inventory

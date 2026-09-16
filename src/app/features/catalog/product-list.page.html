@@ -127,6 +127,7 @@
                 </div>
                 <div class="pf-product__body">
                   <h3 class="pf-product__name">{{ product.name }}</h3>
+                  <pf-stars [average]="product.rating_average" [count]="product.rating_count" />
                   @if (product.short_description) {
                     <p class="pf-product__desc">{{ product.short_description }}</p>
                   }

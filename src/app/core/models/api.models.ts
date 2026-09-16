@@ -112,6 +112,9 @@ export interface ProductSummary {
   is_available: boolean;
   /** A status, not a number -- the API never publishes stock levels. */
   stock_status: StockStatus;
+  /** Averaged over approved reviews only; null until there are any. */
+  rating_average: number | null;
+  rating_count: number;
 }
 
 export interface ProductImage {
@@ -130,9 +133,30 @@ export interface ProductDetail extends ProductSummary {
   images: ProductImage[];
   category: Category | null;
   price_display: string;
-  /** Averaged over approved reviews only; null until there are any. */
-  rating_average: number | null;
-  rating_count: number;
+}
+
+export interface AdminProductImage extends ProductImage {
+  product_id: number;
+}
+
+export interface ProductImagePayload {
+  image_url: string;
+  alt_text?: string | null;
+  display_order?: number;
+  is_primary?: boolean;
+}
+
+export interface AuditEntry {
+  id: number;
+  /** Null when the account that acted has since been deleted. */
+  user_id: number | null;
+  entity_type: string;
+  entity_id: string;
+  action: string;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  ip_address: string | null;
+  created_at: string;
 }
 
 // ---------------------------------------------------------------- reviews

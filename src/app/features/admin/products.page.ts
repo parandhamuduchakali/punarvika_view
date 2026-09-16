@@ -1,8 +1,14 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AppApiError } from '../../core/interceptors/error.interceptor';
-import { AdminCategory, AdminProduct, Page, ProductUnit } from '../../core/models/api.models';
+import {
+  AdminCategory,
+  AdminProduct,
+  AdminProductImage,
+  Page,
+  ProductUnit,
+} from '../../core/models/api.models';
 import { AdminService, ProductPayload } from '../../core/services/admin.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { applyApiErrors, controlError } from '../../shared/form-errors';
@@ -14,7 +20,7 @@ const PAGE_SIZE = 20;
 @Component({
   selector: 'pf-admin-products',
   standalone: true,
-  imports: [ReactiveFormsModule, InrPipe, LoadingComponent, ErrorStateComponent],
+  imports: [ReactiveFormsModule, FormsModule, InrPipe, LoadingComponent, ErrorStateComponent],
   templateUrl: './products.page.html',
   styleUrl: './admin.scss',
 })
@@ -32,6 +38,13 @@ export class AdminProductsPage implements OnInit {
   /** null = closed, 0 = creating, >0 = editing that product. */
   protected readonly editingId = signal<number | null>(null);
   protected readonly offset = signal(0);
+
+  /** Which product has its image panel open, and what that panel holds. */
+  protected readonly imagesFor = signal<AdminProduct | null>(null);
+  protected readonly images = signal<AdminProductImage[]>([]);
+  protected readonly imageError = signal<string | null>(null);
+  protected newImageUrl = '';
+  protected newImageAlt = '';
 
   protected readonly units: ProductUnit[] = ['LITRE', 'KG', 'GRAM', 'PIECE', 'DOZEN', 'PACKET'];
 
@@ -170,6 +183,75 @@ export class AdminProductsPage implements OnInit {
         this.load();
       },
       error: () => this.notifications.error('Could not withdraw that product.'),
+    });
+  }
+
+  // --------------------------------------------------------------- images
+  protected openImages(product: AdminProduct): void {
+    this.imagesFor.set(product);
+    this.imageError.set(null);
+    this.newImageUrl = '';
+    this.newImageAlt = '';
+    this.loadImages(product.id);
+  }
+
+  protected closeImages(): void {
+    this.imagesFor.set(null);
+  }
+
+  private loadImages(productId: number): void {
+    this.admin.productImages(productId).subscribe({
+      next: (images) => this.images.set(images),
+      error: () => this.images.set([]),
+    });
+  }
+
+  protected addImage(): void {
+    const product = this.imagesFor();
+    if (!product || !this.newImageUrl.trim()) {
+      return;
+    }
+    this.imageError.set(null);
+
+    this.admin
+      .addProductImage(product.id, {
+        image_url: this.newImageUrl.trim(),
+        alt_text: this.newImageAlt.trim() || null,
+      })
+      .subscribe({
+        next: () => {
+          this.newImageUrl = '';
+          this.newImageAlt = '';
+          this.loadImages(product.id);
+        },
+        error: (error: unknown) => {
+          // The API rejects javascript: and data: URLs; show its wording.
+          this.imageError.set(
+            error instanceof AppApiError ? error.message : 'Could not add that image.',
+          );
+        },
+      });
+  }
+
+  protected makePrimary(image: AdminProductImage): void {
+    const product = this.imagesFor();
+    if (!product) {
+      return;
+    }
+    this.admin.setPrimaryImage(product.id, image.id).subscribe({
+      next: () => this.loadImages(product.id),
+      error: () => this.notifications.error('Could not set the main image.'),
+    });
+  }
+
+  protected removeImage(image: AdminProductImage): void {
+    const product = this.imagesFor();
+    if (!product) {
+      return;
+    }
+    this.admin.deleteProductImage(product.id, image.id).subscribe({
+      next: () => this.loadImages(product.id),
+      error: () => this.notifications.error('Could not remove that image.'),
     });
   }
 

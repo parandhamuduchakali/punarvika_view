@@ -1,10 +1,10 @@
 <section class="pf-hero">
   <div class="pf-container pf-hero__inner">
     <div class="pf-hero__copy">
-      <h1>Fresh from our farm to your kitchen</h1>
+      <h1>Rooted in dharma, growing for the future</h1>
       <p>
-        Buffalo and cow milk drawn each morning, country eggs, native chicken and seasonal
-        produce &mdash; grown and raised on Punarvika Farms, delivered straight to you.
+        Agriculture, milk, sheep and goat, and poultry &mdash; grown and raised on
+        Punarvika Farms and delivered straight to your kitchen.
       </p>
       <div class="pf-hero__actions">
         <a routerLink="/products" class="pf-button">Shop the farm</a>
@@ -76,6 +76,7 @@
               </div>
               <div class="pf-product__body">
                 <h3 class="pf-product__name">{{ product.name }}</h3>
+                <pf-stars [average]="product.rating_average" [count]="product.rating_count" />
                 @if (product.short_description) {
                   <p class="pf-product__desc">{{ product.short_description }}</p>
                 }
@@ -95,7 +96,7 @@
       <div class="pf-promise">
         <span aria-hidden="true">🌱</span>
         <h3>Grown on our farm</h3>
-        <p>No middlemen. What you order is what we produce.</p>
+        <p>Agriculture, dairy, sheep and goat, poultry. No middlemen.</p>
       </div>
       <div class="pf-promise">
         <span aria-hidden="true">🚚</span>

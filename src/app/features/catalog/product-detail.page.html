@@ -50,14 +50,11 @@
 
         @if (item.rating_count > 0) {
           <p class="pf-detail__rating">
-            <span class="pf-detail__stars" aria-hidden="true">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span [class.pf-star--on]="star <= (item.rating_average ?? 0)">★</span>
-              }
-            </span>
-            <span class="pf-sr-only">
-              Rated {{ item.rating_average }} out of 5 from {{ item.rating_count }} reviews
-            </span>
+            <pf-stars
+              [average]="item.rating_average"
+              [count]="item.rating_count"
+              [showCount]="false"
+            />
             <span class="pf-muted">
               {{ item.rating_average }} · {{ item.rating_count }}
               {{ item.rating_count === 1 ? 'review' : 'reviews' }}

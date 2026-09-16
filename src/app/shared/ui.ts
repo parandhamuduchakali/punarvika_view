@@ -198,3 +198,53 @@ export class StatusChipComponent {
     return 'neutral';
   }
 }
+
+
+/** Read-only star rating. Hidden entirely when nothing has been rated yet. */
+@Component({
+  selector: 'pf-stars',
+  standalone: true,
+  template: `
+    @if (count() > 0) {
+      <span class="pf-stars" [attr.aria-label]="label()">
+        <span class="pf-stars__marks" aria-hidden="true">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+            <span [class.pf-stars__on]="star <= (average() ?? 0)">★</span>
+          }
+        </span>
+        @if (showCount()) {
+          <span class="pf-stars__count">({{ count() }})</span>
+        }
+      </span>
+    }
+  `,
+  styles: [
+    `
+      .pf-stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+      }
+      .pf-stars__marks span {
+        color: var(--pf-border);
+        font-size: 0.95rem;
+      }
+      .pf-stars__on {
+        color: #d99b0b;
+      }
+      .pf-stars__count {
+        color: var(--pf-muted);
+      }
+    `,
+  ],
+})
+export class StarRatingComponent {
+  readonly average = input<number | null>(null);
+  readonly count = input(0);
+  readonly showCount = input(true);
+
+  label(): string {
+    return `Rated ${this.average() ?? 0} out of 5 from ${this.count()} reviews`;
+  }
+}

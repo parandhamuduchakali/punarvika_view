@@ -154,6 +154,69 @@
   </section>
 }
 
+@if (imagesFor(); as product) {
+  <section class="pf-admin-form">
+    <div class="pf-admin-head">
+      <h3>Images — {{ product.name }}</h3>
+      <button type="button" class="pf-link-button" (click)="closeImages()">Close</button>
+    </div>
+
+    @if (imageError()) {
+      <div class="pf-alert pf-alert--error" role="alert">{{ imageError() }}</div>
+    }
+
+    <div class="pf-form-row">
+      <div class="pf-field">
+        <label class="pf-label" for="image_url">Image URL</label>
+        <input
+          id="image_url"
+          type="url"
+          class="pf-input"
+          [(ngModel)]="newImageUrl"
+          placeholder="https://…"
+        />
+      </div>
+      <div class="pf-field">
+        <label class="pf-label" for="image_alt">Description for screen readers</label>
+        <input id="image_alt" type="text" class="pf-input" [(ngModel)]="newImageAlt" />
+      </div>
+    </div>
+    <div class="pf-form-actions">
+      <button type="button" class="pf-button" (click)="addImage()">Add image</button>
+    </div>
+
+    @if (images().length === 0) {
+      <p class="pf-muted" style="margin-top: 1rem">
+        No images yet. The product page falls back to a placeholder.
+      </p>
+    } @else {
+      <div class="pf-image-grid">
+        @for (image of images(); track image.id) {
+          <figure class="pf-image-card">
+            <img [src]="image.image_url" [alt]="image.alt_text || product.name" />
+            <figcaption>
+              @if (image.is_primary) {
+                <span class="pf-badge-main">Main</span>
+              } @else {
+                <button type="button" class="pf-link-button" (click)="makePrimary(image)">
+                  Make main
+                </button>
+              }
+              <button
+                type="button"
+                class="pf-link-button pf-link-button--danger"
+                (click)="removeImage(image)"
+              >
+                Remove
+              </button>
+            </figcaption>
+          </figure>
+        }
+      </div>
+    }
+  </section>
+}
+
 @if (loading()) {
   <pf-loading label="Loading products" />
 } @else if (failed()) {
@@ -197,6 +260,9 @@
                 <div class="pf-row-actions">
                   <button type="button" class="pf-link-button" (click)="startEdit(product)">
                     Edit
+                  </button>
+                  <button type="button" class="pf-link-button" (click)="openImages(product)">
+                    Images
                   </button>
                   @if (product.is_active) {
                     <button

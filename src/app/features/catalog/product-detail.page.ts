@@ -9,7 +9,12 @@ import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { QuantityPipe } from '../../shared/inr.pipe';
-import { ErrorStateComponent, LoadingComponent, StatusChipComponent } from '../../shared/ui';
+import {
+  ErrorStateComponent,
+  LoadingComponent,
+  StarRatingComponent,
+  StatusChipComponent,
+} from '../../shared/ui';
 import { ProductReviewsComponent } from './product-reviews';
 
 @Component({
@@ -22,6 +27,7 @@ import { ProductReviewsComponent } from './product-reviews';
     LoadingComponent,
     ErrorStateComponent,
     StatusChipComponent,
+    StarRatingComponent,
     ProductReviewsComponent,
   ],
   templateUrl: './product-detail.page.html',

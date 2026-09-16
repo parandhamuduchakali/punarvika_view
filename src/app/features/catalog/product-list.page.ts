@@ -6,7 +6,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CategoryTree, Page, ProductSort, ProductSummary } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { InrPipe } from '../../shared/inr.pipe';
-import { EmptyStateComponent, ErrorStateComponent, LoadingComponent } from '../../shared/ui';
+import {
+  EmptyStateComponent,
+  ErrorStateComponent,
+  LoadingComponent,
+  StarRatingComponent,
+} from '../../shared/ui';
 
 const PAGE_SIZE = 12;
 
@@ -26,6 +31,7 @@ const PAGE_SIZE = 12;
     LoadingComponent,
     ErrorStateComponent,
     EmptyStateComponent,
+    StarRatingComponent,
   ],
   templateUrl: './product-list.page.html',
   styleUrl: './product-list.page.scss',

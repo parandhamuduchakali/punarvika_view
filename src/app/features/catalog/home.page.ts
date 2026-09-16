@@ -4,13 +4,25 @@ import { RouterLink } from '@angular/router';
 import { CategoryTree, ProductSummary } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { InrPipe } from '../../shared/inr.pipe';
-import { EmptyStateComponent, ErrorStateComponent, LoadingComponent } from '../../shared/ui';
+import {
+  EmptyStateComponent,
+  ErrorStateComponent,
+  LoadingComponent,
+  StarRatingComponent,
+} from '../../shared/ui';
 
 /** The shop front: what the farm sells, and a few products to start with. */
 @Component({
   selector: 'pf-home',
   standalone: true,
-  imports: [RouterLink, InrPipe, LoadingComponent, ErrorStateComponent, EmptyStateComponent],
+  imports: [
+    RouterLink,
+    InrPipe,
+    LoadingComponent,
+    ErrorStateComponent,
+    EmptyStateComponent,
+    StarRatingComponent,
+  ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })

@@ -179,6 +179,12 @@
 .pf-footer__small {
   font-size: 0.825rem;
 }
+/* The company's own words, from the logo -- not marketing copy we invented. */
+.pf-footer__tagline {
+  font-style: italic;
+  color: var(--pf-earth);
+  font-size: 0.9rem;
+}
 
 /* --------------------------------------------------- tablet and narrower */
 @media (max-width: 820px) {
