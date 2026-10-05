@@ -153,6 +153,24 @@ describe('authInterceptor', () => {
     expect(navigate).toHaveBeenCalledWith(['/login'], expect.anything());
   });
 
+  it('fails every request queued behind a refresh that fails', () => {
+    auth.applySession(tokenResponse('stale-token'));
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const failed: string[] = [];
+
+    for (const url of [`${API}/orders`, `${API}/cart`]) {
+      http.get(url).subscribe({ error: () => failed.push(url) });
+    }
+    for (const url of [`${API}/orders`, `${API}/cart`]) {
+      httpMock.expectOne(url).flush({}, { status: 401, statusText: 'Unauthorized' });
+    }
+    httpMock
+      .expectOne(`${API}/auth/refresh`)
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(failed.sort()).toEqual([`${API}/cart`, `${API}/orders`]);
+  });
+
   it('recovers after a failed refresh instead of deadlocking', () => {
     /**
      * `refreshInFlight` is module-level state. If a failed refresh left it set,
