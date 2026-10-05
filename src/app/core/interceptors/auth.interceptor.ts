@@ -10,8 +10,10 @@ import { Router } from '@angular/router';
 import {
   BehaviorSubject,
   Observable,
+  Subject,
   catchError,
   filter,
+  merge,
   switchMap,
   take,
   throwError,
@@ -31,6 +33,7 @@ const REFRESH_EXEMPT = ['/auth/login', '/auth/register', '/auth/refresh', '/auth
  */
 let refreshInFlight = false;
 const refreshed$ = new BehaviorSubject<string | null>(null);
+const refreshFailed$ = new Subject<unknown>();
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -73,11 +76,10 @@ function handleUnauthorised(
 
   if (refreshInFlight) {
     // Queue behind the refresh already running.
-    return refreshed$.pipe(
-      filter((value): value is string => value !== null),
-      take(1),
-      switchMap(retryWith),
-    );
+    return merge(
+      refreshed$.pipe(filter((value): value is string => value !== null)),
+      refreshFailed$.pipe(switchMap((refreshError) => throwError(() => refreshError))),
+    ).pipe(take(1), switchMap(retryWith));
   }
 
   refreshInFlight = true;
@@ -91,6 +93,9 @@ function handleUnauthorised(
     }),
     catchError((refreshError: unknown) => {
       refreshInFlight = false;
+      // Fail every request queued behind this refresh; waiting for a token
+      // that will never come would leave them hanging forever.
+      refreshFailed$.next(refreshError);
       auth.clearSession();
       void router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
       return throwError(() => refreshError);

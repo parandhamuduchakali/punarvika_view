@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AppApiError } from '../../core/interceptors/error.interceptor';
 import { User } from '../../core/models/api.models';
 import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ProfileService } from '../../core/services/profile.service';
 import {
@@ -26,6 +27,7 @@ export class ProfilePage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly profile = inject(ProfileService);
   private readonly auth = inject(AuthService);
+  private readonly cart = inject(CartService);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationService);
 
@@ -119,6 +121,7 @@ export class ProfilePage implements OnInit {
       next: (response) => {
         this.signingOutEverywhere.set(false);
         this.auth.clearSession();
+        this.cart.reset();
         this.notifications.success(response.message);
         void this.router.navigate(['/login']);
       },
@@ -143,6 +146,7 @@ export class ProfilePage implements OnInit {
         this.savingPassword.set(false);
         // The API revokes every session, so this browser is signed out too.
         this.auth.clearSession();
+        this.cart.reset();
         this.notifications.success('Your password has been changed. Please sign in again.');
         void this.router.navigate(['/login']);
       },

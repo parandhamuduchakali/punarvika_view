@@ -28,12 +28,12 @@ export class App {
   protected readonly year = new Date().getFullYear();
 
   constructor() {
-    // Load the basket as soon as there is a session to load it for.
-    this.auth.restoreSession().then(() => {
-      if (this.auth.isAuthenticated()) {
-        this.cart.load().subscribe({ error: () => undefined });
-      }
-    });
+    // The app initializer has already restored the session (app.config.ts), so
+    // only the basket is loaded here. Refreshing again would rotate the token
+    // a second time on every page load.
+    if (this.auth.isAuthenticated()) {
+      this.cart.load().subscribe({ error: () => undefined });
+    }
   }
 
   protected toggleMenu(): void {
