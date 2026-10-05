@@ -136,7 +136,7 @@ does not zoom on focus, star ratings carry text alternatives, and
 ## Tests
 
 ```bash
-npm test             # 92 tests
+npm test             # vitest, single run
 ```
 
 Weighted towards the places where a bug is expensive rather than towards line
