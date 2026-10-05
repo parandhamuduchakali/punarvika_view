@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
@@ -51,6 +52,7 @@ export class OrderDetailPage implements OnInit {
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationService);
   private readonly http = inject(HttpClient);
+  private readonly title = inject(Title);
 
   protected readonly order = signal<OrderDetail | null>(null);
   protected readonly orderPayments = signal<Payment[]>([]);
@@ -92,6 +94,7 @@ export class OrderDetailPage implements OnInit {
     this.orders.get(id).subscribe({
       next: (order) => {
         this.order.set(order);
+        this.title.setTitle(`Order ${order.order_number} — Punarvika Farms`);
         this.loading.set(false);
         this.payments.forOrder(order.id).subscribe({
           next: (list) => this.orderPayments.set(list),

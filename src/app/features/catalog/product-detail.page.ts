@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -40,6 +41,7 @@ export class ProductDetailPage implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly notifications = inject(NotificationService);
+  private readonly title = inject(Title);
 
   protected readonly product = signal<ProductDetail | null>(null);
   protected readonly loading = signal(true);
@@ -77,6 +79,7 @@ export class ProductDetailPage implements OnInit {
     this.catalog.product(id).subscribe({
       next: (product) => {
         this.product.set(product);
+        this.title.setTitle(`${product.name} — Punarvika Farms`);
         // Start at the minimum the farm will sell, not a hardcoded 1.
         this.quantity = stripTrailingZeros(product.minimum_order_quantity);
         this.selectedImage.set(product.image_url ?? product.images[0]?.image_url ?? null);
